@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import RunDataService from "../services/run.service";
 import { styles } from "../css-common";
 
 import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
 import { DataGrid } from "@mui/x-data-grid";
+import { GridRowParams } from "@mui/x-data-grid";
 
 class RunList extends Component {
   constructor(props) {
@@ -21,9 +22,17 @@ class RunList extends Component {
         field: "id",
         headerName: "run #",
         width: 120,
-        renderCell: (params: GridRenderCellParams) => (
-          <Link href={"/run/" + params.value}>
-            <strong>{params.value}</strong>
+        renderCell: (params: GridRowParams) => (
+          <Link
+            to={{
+              pathname: "/run",
+              state: {
+                run: params.row,
+                id: params.id
+              },
+            }}
+          >
+            <strong>{params.id}</strong>
           </Link>
         ),
       },
@@ -47,7 +56,7 @@ class RunList extends Component {
       })
       .catch((e) => {
         console.log(e);
-      })
+      });
   }
 
   render() {

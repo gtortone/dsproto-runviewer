@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import RunDataService from "../services/run.service";
 import { styles } from "../css-common";
 
 import { withStyles } from "@mui/styles";
@@ -11,46 +10,12 @@ import Typography from "@mui/material/Typography";
 class RunDetails extends Component {
   constructor(props) {
     super(props);
-    this.getRun = this.getRun.bind(this);
-
-    this.state = {
-      currentRun: {
-        id: null,
-      },
-      message: "",
-    };
-  }
-
-  retrieveRunset() {
-    RunDataService.getAll()
-      .then((response) => {
-        this.setState({
-          runset: response.data,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      })
-  }
-
-  componentDidMount() {
-    this.getRun(this.props.match.params.id);
-  }
-
-  getRun(id) {
-    RunDataService.get(id)
-      .then((response) => {
-        this.setState({
-          currentRun: response.data[0],
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    this.currentRun = {};
   }
 
   render() {
-    const { currentRun } = this.state;
+    console.log(this.props.location)
+    this.currentRun = this.props.location.state.run;
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -61,7 +26,7 @@ class RunDetails extends Component {
                 run number
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun.id}</strong>
+                <strong>{this.currentRun.id}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -69,7 +34,7 @@ class RunDetails extends Component {
                 start time
               </Typography>
               <Typography variant="body1" color="textPrimary" component="div">
-                <strong>{currentRun.starttime}</strong>
+                <strong>{this.currentRun.starttime}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -77,7 +42,7 @@ class RunDetails extends Component {
                 stop time
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun.stoptime}</strong>
+                <strong>{this.currentRun.stoptime}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -85,7 +50,7 @@ class RunDetails extends Component {
                 duration
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun.duration}</strong>
+                <strong>{this.currentRun.duration}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -93,7 +58,7 @@ class RunDetails extends Component {
                 shifter
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun.Shifter}</strong>
+                <strong>{this.currentRun.Shifter}</strong>
               </Typography>
             </CardContent>
           </Box>
@@ -105,7 +70,7 @@ class RunDetails extends Component {
                 run type
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun["Run type"]}</strong>
+                <strong>{this.currentRun["Run type"]}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -113,7 +78,7 @@ class RunDetails extends Component {
                 comment
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun["Comment"]}</strong>
+                <strong>{this.currentRun["Comment"]}</strong>
               </Typography>
             </CardContent>
           </Box>
@@ -125,7 +90,7 @@ class RunDetails extends Component {
                 light level
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{currentRun["Light level"]}</strong>
+                <strong>{this.currentRun["Light level"]}</strong>
               </Typography>
             </CardContent>
           </Box>

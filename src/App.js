@@ -26,7 +26,7 @@ class App extends Component {
         </AppBar>
         <Switch>
           <Route exact path={["/", "/runlist"]} component={RunList} />
-          <Route path="/run/:id" component={RunDetails} />
+          <Route path="/run" component={RunDetails} />
         </Switch>
       </div>
     );

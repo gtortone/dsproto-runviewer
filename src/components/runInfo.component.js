@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import { styles } from "../css-common";
-
 import { withStyles } from "@mui/styles";
 
 class RunInfo extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
   }
 
   render() {
