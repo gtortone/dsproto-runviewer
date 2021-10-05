@@ -122,7 +122,7 @@ class RunDetails extends Component {
           <Box sx={{ display: "flex", flexDirection: "row" }}>
             <CardContent>
               <Typography variant="body2" color="textPrimary" gutterBottom>
-                shifter
+                light level
               </Typography>
               <Typography variant="body1" component="div">
                 <strong>{currentRun["Light level"]}</strong>

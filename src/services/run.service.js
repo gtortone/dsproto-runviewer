@@ -1,12 +1,12 @@
-import http from "../http-common";
+import axios from "axios";
 
 class RunDataService {
   getAll() {
-    return http.get("/runset");
+    return axios.get("/api/runset");
   }
 
   get(id) {
-    return http.get(`/runset/${id}`);
+    return axios.get(`/api/runset/${id}`);
   }
 }
 

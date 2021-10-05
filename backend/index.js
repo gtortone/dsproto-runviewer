@@ -4,7 +4,7 @@ const cors = require('cors')
 const moment = require('moment')
 
 const app = express();
-const port = 3002;
+const port = 4002;
 
 app.use(cors());
 app.use(express.json())
