@@ -13,10 +13,11 @@ class RunList extends Component {
   constructor(props) {
     super(props);
     this.retrieveRunset = this.retrieveRunset.bind(this);
-    
+
     this.state = {
       runset: [],
       pageSize: 15,
+      setup: "setup-1",
     };
 
     this.columns = [
@@ -55,7 +56,7 @@ class RunList extends Component {
   }
 
   retrieveRunset() {
-    RunDataService.getAll()
+    RunDataService.getAll(this.props.location.state.setup)
       .then((response) => {
         this.setState({
           runset: response.data,
@@ -68,7 +69,15 @@ class RunList extends Component {
 
   render() {
     return (
-      <Box mt={1} sx={{ height: 700, width: "70%", display: "flex", flexDirection: "row" }}>
+      <Box
+        mt={1}
+        sx={{
+          height: 600,
+          width: "70%",
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
         <DataGrid
           autoHeight
           rowHeight={32}

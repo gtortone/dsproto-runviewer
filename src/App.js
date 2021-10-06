@@ -14,6 +14,13 @@ import RunDetails from "./components/runDetails.component";
 import RunTest from "./components/runTest.component";
 
 class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      setup: 'setup-1'
+    }
+  }
+
   render() {
     const { classes } = this.props;
     const baseurl = process.env.REACT_APP_BASEURL;
@@ -27,18 +34,40 @@ class App extends Component {
             </Typography>
             <Button
               component={RouterLink}
-              to={ baseurl + "/runlist" }
+              to={{
+                pathname: baseurl + "/runlist",
+                state: {
+                  setup: "setup-1"
+                },
+              }}
               color="inherit"
               sx={{ m: 2 }}
             >
-              List
+              Setup-1
+            </Button>
+            <Button
+              component={RouterLink}
+              to={{
+                pathname: baseurl + "/runlist",
+                state: {
+                  setup: "setup-2"
+                },
+              }}
+              color="inherit"
+              sx={{ m: 2 }}
+            >
+              Setup-2
             </Button>
           </Toolbar>
         </AppBar>
         <Switch>
-          <Route exact path={[baseurl, baseurl + "/runlist"]} component={RunList} />
-          <Route path={baseurl+"/run"} component={RunDetails} />
-          <Route path={baseurl+"/test"} component={RunTest} />
+          <Route
+            exact
+            path={[baseurl, baseurl + "/runlist"]}
+            component={RunList}
+          />
+          <Route path={baseurl + "/run"} component={RunDetails} />
+          <Route path={baseurl + "/test"} component={RunTest} />
         </Switch>
       </div>
     );

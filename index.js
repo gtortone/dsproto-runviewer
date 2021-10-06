@@ -46,11 +46,42 @@ runapp.get("/api/runset", (req, res) => {
   );
 });
 
-// Route to get one run
-runapp.get("/api/runset/:id", (req, res) => {
-  const id = req.params.id;
+// Route to get all runs from a setup
+runapp.get("/api/:setup/runset", (req, res) => {
+  const setup = req.params.setup;
+  var table = "";
+
+  if (setup === "setup-1") table = "Runlog-cdaq";
+  else if (setup === "setup-2") table = "Runlog-daq";
+
   db.query(
-    "SELECT *,`Run number` AS id FROM `Runlog-cdaq` WHERE `Run number` = ?",
+    "SELECT *,`Run number` AS runid FROM `" +
+      table +
+      "` ORDER BY `Run number` DESC",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      var id = 0;
+      result.map((obj) => {
+        obj["id"] = id++;
+        return obj;
+      });
+      res.send(result.map(addMonData));
+    }
+  );
+});
+
+// Route to get one run from a setup
+runapp.get("/api/:setup/runset/:id", (req, res) => {
+  const id = req.params.id;
+  const setup = req.params.setup;
+
+  if (setup === "setup-1") table = "Runlog-cdaq";
+  else if (setup === "setup-2") table = "Runlog-daq";
+
+  db.query(
+    "SELECT *,`Run number` AS id FROM `" + table + "` WHERE `Run number` = ?",
     id,
     (err, result) => {
       if (err) {

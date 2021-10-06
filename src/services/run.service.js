@@ -6,12 +6,20 @@ class RunDataService {
     this.baseurl = process.env.REACT_APP_BASEURL;
   }
 
-  getAll() {
+  getAll_() {
     return axios.get(this.baseurl + "/api/runset");
   }
 
-  get(id) {
+  getAll(setup) {
+    return axios.get(`${this.baseurl}/api/${setup}/runset`);
+  }
+
+  get_(id) {
     return axios.get(`${this.baseurl}/api/runset/${id}`);
+  }
+
+  get(setup, id) {
+    return axios.get(`${this.baseurl}/api/${setup}/runset/${id}`);
   }
 }
 
