@@ -9,6 +9,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import { GridRowParams } from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
 
+import { random } from "mathjs";
+
 class RunList extends Component {
   constructor(props) {
     super(props);
@@ -52,8 +54,8 @@ class RunList extends Component {
 
     // no default state from parent (App)
     this.props.location.state
-      ? this.state.setup = this.props.location.state.setup
-      : this.state.setup = "setup-1"
+      ? (this.state.setup = this.props.location.state.setup)
+      : (this.state.setup = "setup-1");
   }
 
   componentDidMount() {
@@ -75,6 +77,7 @@ class RunList extends Component {
   render() {
     return (
       <Box
+        key={random()}
         mt={1}
         sx={{
           height: 600,
