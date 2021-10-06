@@ -17,7 +17,7 @@ class RunList extends Component {
     this.state = {
       runset: [],
       pageSize: 15,
-      setup: "setup-1",
+      setup: "",
     };
 
     this.columns = [
@@ -49,6 +49,11 @@ class RunList extends Component {
       { field: "starttime", headerName: "start time", width: 200 },
       { field: "duration", headerName: "duration", width: 150 },
     ];
+
+    // no default state from parent (App)
+    this.props.location.state
+      ? this.state.setup = this.props.location.state.setup
+      : this.state.setup = "setup-1"
   }
 
   componentDidMount() {
@@ -56,7 +61,7 @@ class RunList extends Component {
   }
 
   retrieveRunset() {
-    RunDataService.getAll(this.props.location.state.setup)
+    RunDataService.getAll(this.state.setup)
       .then((response) => {
         this.setState({
           runset: response.data,
