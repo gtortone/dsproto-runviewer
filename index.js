@@ -67,7 +67,7 @@ runapp.use((req, res, next) => {
   res.sendFile(path.join(__dirname, ".", "build", "index.html"));
 });
 
-app.use(process.env.BASEURL, runapp);
+app.use(process.env.REACT_APP_BASEURL, runapp);
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on ${port}`);

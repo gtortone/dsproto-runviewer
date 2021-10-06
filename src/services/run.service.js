@@ -1,12 +1,17 @@
 import axios from "axios";
 
 class RunDataService {
+
+  constructor() {
+    this.baseurl = process.env.REACT_APP_BASEURL;
+  }
+
   getAll() {
-    return axios.get("/api/runset");
+    return axios.get(this.baseurl + "/api/runset");
   }
 
   get(id) {
-    return axios.get(`/api/runset/${id}`);
+    return axios.get(`${this.baseurl}/api/runset/${id}`);
   }
 }
 

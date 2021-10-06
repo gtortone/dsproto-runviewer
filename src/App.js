@@ -16,6 +16,7 @@ import RunTest from "./components/runTest.component";
 class App extends Component {
   render() {
     const { classes } = this.props;
+    const baseurl = process.env.REACT_APP_BASEURL;
 
     return (
       <div>
@@ -26,7 +27,7 @@ class App extends Component {
             </Typography>
             <Button
               component={RouterLink}
-              to="/runlist"
+              to={ baseurl + "/runlist" }
               color="inherit"
               sx={{ m: 2 }}
             >
@@ -35,9 +36,9 @@ class App extends Component {
           </Toolbar>
         </AppBar>
         <Switch>
-          <Route exact path={["/", "/runlist"]} component={RunList} />
-          <Route path="/run" component={RunDetails} />
-          <Route path="/test" component={RunTest} />
+          <Route exact path={[baseurl, baseurl + "/runlist"]} component={RunList} />
+          <Route path={baseurl+"/run"} component={RunDetails} />
+          <Route path={baseurl+"/test"} component={RunTest} />
         </Switch>
       </div>
     );

@@ -13,7 +13,7 @@ class RunList extends Component {
   constructor(props) {
     super(props);
     this.retrieveRunset = this.retrieveRunset.bind(this);
-
+    
     this.state = {
       runset: [],
       pageSize: 15,
@@ -29,7 +29,7 @@ class RunList extends Component {
             <Link
               component={RouterLink}
               to={{
-                pathname: "/run",
+                pathname: process.env.REACT_APP_BASEURL + "/run",
                 state: {
                   runSet: params.api.state.rows.idRowsLookup,
                   runCount: Object.keys(params.api.state.rows.idRowsLookup)
