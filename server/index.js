@@ -1,12 +1,11 @@
 const express = require('express');
 const db = require('./config/db')
-const cors = require('cors')
 const moment = require('moment')
+const path = require("path");
 
 const app = express();
-const port = 4002;
+const port = 4000;
 
-app.use(cors());
 app.use(express.json())
 
 function addMonData(run) {
@@ -21,10 +20,15 @@ function addMonData(run) {
 
 // Route to get all runs
 app.get("/api/runset", (req,res)=>{
-    db.query("SELECT *,`Run number` AS id FROM `Runlog-cdaq` ORDER BY `Run number` DESC", (err,result) => {
+    db.query("SELECT *,`Run number` AS runid FROM `Runlog-cdaq` ORDER BY `Run number` DESC", (err,result) => {
         if(err) {
             console.log(err)
-        } 
+        }
+        var id = 0; 
+        result.map( (obj) => {
+            obj['id'] = id++;
+            return obj;
+        })
         res.send(result.map(addMonData))
     });
 });
@@ -39,6 +43,12 @@ app.get("/api/runset/:id", (req,res)=>{
         res.send(result.map(addMonData))
     });
 });
+
+app.use(express.static(path.join(__dirname, "..", "build")));
+app.use(express.static("public"));
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+  });
 
 app.listen(port, '0.0.0.0', ()=>{
     console.log(`Server is running on ${port}`)

@@ -6,16 +6,33 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 class RunDetails extends Component {
   constructor(props) {
     super(props);
-    this.currentRun = {};
+    this.showPrevRun = this.showPrevRun.bind(this);
+    this.showNextRun = this.showNextRun.bind(this);
+
+    this.state = {
+      idnum: this.props.location.state.idnum,
+      prevDisable: false,
+      nextDisable: false,
+    };
+
+    this.runCount = this.props.location.state.runCount
+  }
+
+  showPrevRun() {
+    this.setState({ idnum: this.state.idnum + 1 });
+  }
+
+  showNextRun() {
+    this.setState({ idnum: this.state.idnum - 1 });
   }
 
   render() {
-    console.log(this.props.location)
-    this.currentRun = this.props.location.state.run;
+    const currentRun = this.props.location.state.runSet[this.state.idnum];
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -26,7 +43,7 @@ class RunDetails extends Component {
                 run number
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun.id}</strong>
+                <strong>{currentRun.runid}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -34,7 +51,7 @@ class RunDetails extends Component {
                 start time
               </Typography>
               <Typography variant="body1" color="textPrimary" component="div">
-                <strong>{this.currentRun.starttime}</strong>
+                <strong>{currentRun.starttime}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -42,7 +59,7 @@ class RunDetails extends Component {
                 stop time
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun.stoptime}</strong>
+                <strong>{currentRun.stoptime}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -50,7 +67,7 @@ class RunDetails extends Component {
                 duration
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun.duration}</strong>
+                <strong>{currentRun.duration}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -58,7 +75,7 @@ class RunDetails extends Component {
                 shifter
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun.Shifter}</strong>
+                <strong>{currentRun.Shifter}</strong>
               </Typography>
             </CardContent>
           </Box>
@@ -70,7 +87,7 @@ class RunDetails extends Component {
                 run type
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun["Run type"]}</strong>
+                <strong>{currentRun["Run type"]}</strong>
               </Typography>
             </CardContent>
             <CardContent>
@@ -78,7 +95,7 @@ class RunDetails extends Component {
                 comment
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun["Comment"]}</strong>
+                <strong>{currentRun["Comment"]}</strong>
               </Typography>
             </CardContent>
           </Box>
@@ -90,11 +107,31 @@ class RunDetails extends Component {
                 light level
               </Typography>
               <Typography variant="body1" component="div">
-                <strong>{this.currentRun["Light level"]}</strong>
+                <strong>{currentRun["Light level"]}</strong>
               </Typography>
             </CardContent>
           </Box>
         </Card>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Box sx={{ display: "flex", border: 0, m: 1 }}>
+            <Button
+              variant="outlined"
+              disabled={this.state.idnum === (this.runCount-1)}
+              onClick={this.showPrevRun}
+            >
+              <strong>PREV</strong>
+            </Button>
+          </Box>
+          <Box sx={{ display: "flex", border: 0, m: 1 }}>
+            <Button
+              variant="outlined"
+              disabled={this.state.idnum === 0}
+              onClick={this.showNextRun}
+            >
+              <strong>NEXT</strong>
+            </Button>
+          </Box>
+        </Box>
       </Box>
     );
   }

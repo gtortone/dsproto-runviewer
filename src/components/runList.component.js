@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import RunDataService from "../services/run.service";
 import { styles } from "../css-common";
 
@@ -7,6 +7,7 @@ import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { GridRowParams } from "@mui/x-data-grid";
+import Link from "@mui/material/Link";
 
 class RunList extends Component {
   constructor(props) {
@@ -15,31 +16,37 @@ class RunList extends Component {
 
     this.state = {
       runset: [],
+      pageSize: 15,
     };
 
     this.columns = [
       {
-        field: "id",
+        field: "runid",
         headerName: "run #",
         width: 120,
-        renderCell: (params: GridRowParams) => (
-          <Link
-            to={{
-              pathname: "/run",
-              state: {
-                run: params.row,
-                id: params.id
-              },
-            }}
-          >
-            <strong>{params.id}</strong>
-          </Link>
-        ),
+        renderCell: function (params: GridRowParams) {
+          return (
+            <Link
+              component={RouterLink}
+              to={{
+                pathname: "/run",
+                state: {
+                  runSet: params.api.state.rows.idRowsLookup,
+                  runCount: Object.keys(params.api.state.rows.idRowsLookup)
+                    .length,
+                  idnum: params.row.id,
+                },
+              }}
+            >
+              <strong>{params.value}</strong>
+            </Link>
+          );
+        },
       },
-      { field: "Shifter", headerName: "shifter", width: 200 },
+      { field: "Shifter", headerName: "shifter", width: 150 },
       { field: "Run type", headerName: "run type", width: 250 },
-      { field: "starttime", headerName: "start time", width: 300 },
-      { field: "duration", headerName: "duration", width: 200 },
+      { field: "starttime", headerName: "start time", width: 200 },
+      { field: "duration", headerName: "duration", width: 150 },
     ];
   }
 
@@ -60,22 +67,21 @@ class RunList extends Component {
   }
 
   render() {
-    const { runset } = this.state;
-
     return (
-      <Box
-        mt={1}
-        sx={{ height: 700, display: "flex", flexDirection: "column" }}
-      >
+      <Box mt={1} sx={{ height: 700, width: "70%", display: "flex", flexDirection: "row" }}>
         <DataGrid
-          rowHeight={35}
-          rows={runset}
+          autoHeight
+          rowHeight={32}
+          rows={this.state.runset}
           columns={this.columns}
-          pageSize={15}
-          rowsPerPageOptions={[15]}
+          pageSize={this.state.pageSize}
+          rowsPerPageOptions={[10, 15, 20]}
           pagination
           disableColumnMenu
           disableSelectionOnClick
+          onPageSizeChange={(newPageSize) => {
+            this.setState({ pageSize: newPageSize });
+          }}
         />
       </Box>
     );
