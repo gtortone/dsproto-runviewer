@@ -16,7 +16,7 @@ npm run start:be:dev
 
 To start frontend
 ```
-npm run stat:fe:dev
+npm run start:fe:dev
 ```
 
 
