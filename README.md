@@ -35,3 +35,20 @@ To run frontend:
 npm run start:prod
 ```
 
+### Startup script with supervisord
+
+```
+user=vdaq
+environment=PATH="$PATH:/opt/node/bin",REACT_APP_BASEURL="/runviewer"
+directory=/opt/dsproto-runviewer
+command=node index.js
+stdout_logfile=/var/log/runviewer-stdout.log
+stdout_logfile_maxbytes=1MB
+stdout_logfile_backups=5
+stderr_logfile=/var/log/runviewer-stderr.log
+stderr_ogfile_maxbytes=1MB
+stderr_logfile_backups=5
+autorestart=true
+startsecs=5
+```
+
