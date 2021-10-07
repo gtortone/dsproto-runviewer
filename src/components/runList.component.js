@@ -8,8 +8,9 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { GridRowParams } from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
-
 import { random } from "mathjs";
+
+import RunHeader from "./runHeader.component";
 
 class RunList extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class RunList extends Component {
     this.state = {
       runset: [],
       pageSize: 15,
-      setup: "",
+      setup: this.props.match.params.setup,
     };
 
     this.columns = [
@@ -51,15 +52,17 @@ class RunList extends Component {
       { field: "starttime", headerName: "start time", width: 200 },
       { field: "duration", headerName: "duration", width: 150 },
     ];
-
-    // no default state from parent (App)
-    this.props.location.state
-      ? (this.state.setup = this.props.location.state.setup)
-      : (this.state.setup = "setup-1");
   }
 
   componentDidMount() {
     this.retrieveRunset();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.setup !== this.props.match.params.setup) {
+      this.setState({ setup: this.props.match.params.setup });
+      this.retrieveRunset();
+    }
   }
 
   retrieveRunset() {
@@ -76,30 +79,33 @@ class RunList extends Component {
 
   render() {
     return (
-      <Box
-        key={random()}
-        mt={1}
-        sx={{
-          height: 600,
-          width: "70%",
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        <DataGrid
-          autoHeight
-          rowHeight={32}
-          rows={this.state.runset}
-          columns={this.columns}
-          pageSize={this.state.pageSize}
-          rowsPerPageOptions={[10, 15, 20]}
-          pagination
-          disableColumnMenu
-          disableSelectionOnClick
-          onPageSizeChange={(newPageSize) => {
-            this.setState({ pageSize: newPageSize });
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <RunHeader setup={this.state.setup}/>
+        <Box
+          key={random()}
+          mt={1}
+          sx={{
+            height: 600,
+            width: "70%",
+            display: "flex",
+            flexDirection: "row",
           }}
-        />
+        >
+          <DataGrid
+            autoHeight
+            rowHeight={32}
+            rows={this.state.runset}
+            columns={this.columns}
+            pageSize={this.state.pageSize}
+            rowsPerPageOptions={[10, 15, 20]}
+            pagination
+            disableColumnMenu
+            disableSelectionOnClick
+            onPageSizeChange={(newPageSize) => {
+              this.setState({ pageSize: newPageSize });
+            }}
+          />
+        </Box>
       </Box>
     );
   }
