@@ -49,8 +49,8 @@ class App extends Component {
           </Toolbar>
         </AppBar>
         <Switch>
-          <Route exact path="/">
-            <Redirect to="/runlist/setup-1" />
+          <Route exact path={baseurl}>
+            <Redirect to={baseurl +"/runlist/setup-1"} />
           </Route>
           <Route path={baseurl + "/runlist/:setup"} component={RunList} />
           <Route path={baseurl + "/run"} component={RunDetails} />
