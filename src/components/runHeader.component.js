@@ -6,11 +6,6 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 
 class RunHeader extends Component {
-  constructor(props) {
-    super(props);
-    console.log(props);
-  }
-
   render() {
     return (
       <div>
