@@ -6,6 +6,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@material-ui/core": "^4.12.3",
+    "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.0.2",
     "@mui/styles": "^5.0.1",
     "@mui/x-data-grid": "^4.0.0",
@@ -26,7 +27,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start:fe:dev": "REACT_APP_BASEURL= PORT=4040 react-scripts start",
+    "start:fe:dev": "REACT_APP_BASEURL= PORT=4040 BROWSER=none react-scripts start",
     "start:be:dev": "REACT_APP_BASEURL= node index.js",
     "start:prod": "REACT_APP_BASEURL=/runviewer node index.js",
     "build:prod": "REACT_APP_BASEURL=/runviewer PUBLIC_URL=/runviewer react-scripts build",
