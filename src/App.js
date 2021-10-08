@@ -1,77 +1,39 @@
-import React, { Component } from "react";
-import { Switch, Route, Redirect, Link as RouterLink } from "react-router-dom";
+import React, { useState } from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
 import { styles } from "./css-common";
-
-import AppBar from "@mui/material/AppBar";
-import Button from "@mui/material/Button";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { withStyles } from "@mui/styles";
 
+import AppToolBar from "./components/appToolBar.component";
 import RunList from "./components/runList.component";
 import RunDetails from "./components/runDetails.component";
 import RunTest from "./components/runTest.component";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = (props) => {
+  const [setup, setSetup] = useState("setup-1");
+  const baseurl = process.env.REACT_APP_BASEURL;
 
-    this.state = {
-      setup: "setup-1",
-    };
-  }
+  const changeSetup = (newSetup) => {
+    setSetup(newSetup);
+  };
 
-  render() {
-    const { classes } = this.props;
-    const baseurl = process.env.REACT_APP_BASEURL;
-
-    return (
-      <div>
-        <AppBar className={classes.appBar} position="static">
-          <Toolbar>
-            <Typography className={classes.name} variant="h6">
-              Run Viewer
-            </Typography>
-            <Button
-              component={RouterLink}
-              to={{
-                pathname: baseurl + "/runlist/setup-1",
-              }}
-              color="inherit"
-              sx={{ m: 2 }}
-              onClick={() => this.setState({setup: 'setup-1'})}
-            >
-              Setup-1
-            </Button>
-            <Button
-              component={RouterLink}
-              to={{
-                pathname: baseurl + "/runlist/setup-2",
-              }}
-              color="inherit"
-              sx={{ m: 2 }}
-              onClick={() => this.setState({setup: 'setup-2'})}
-            >
-              Setup-2
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Switch>
-          <Route exact path={baseurl === "" ? "/" : baseurl}>
-            <Redirect to={baseurl + "/runlist/setup-1"} />
-          </Route>
-          <Route path={baseurl + "/runlist/:setup"}>
-            <RunList setup={this.state.setup} />
-          </Route>
-          <Route path={baseurl + "/run"} component={RunDetails}/>
-          <Route path={baseurl + "/test"}>
-            <RunTest setup={this.state.setup} />
-          </Route>
-        </Switch>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <AppToolBar changeSetup={changeSetup} />
+      <Switch>
+        <Route exact path={baseurl === "" ? "/" : baseurl}>
+          <Redirect to={baseurl + "/runlist"} setup={"setup-1"} />
+        </Route>
+        <Route path={baseurl + "/runlist"}>
+          <RunList setup={setup} />
+        </Route>
+        <Route path={baseurl + "/run"} component={RunDetails} />
+        <Route path={baseurl + "/test"}>
+          <RunTest setup={setup} />
+        </Route>
+      </Switch>
+    </div>
+  );
+};
 
 export default withStyles(styles)(App);
