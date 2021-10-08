@@ -19,12 +19,19 @@ app.use(express.json());
 const runapp = express.Router();
 
 function addMonData(run) {
-  json = {};
-  startTime = run["Start time"];
-  stopTime = run["Stop time"];
+  let json = {};
+  let startTime = run["Start time"];
+  let stopTime = run["Stop time"];
   json["starttime"] = moment(startTime).format("DD/MM/YYYY HH:mm:ss");
   json["stoptime"] = moment(stopTime).format("DD/MM/YYYY HH:mm:ss");
   json["duration"] = moment.utc(stopTime - startTime).format("HH:mm:ss");
+  if (stopTime == null) {
+    json["stoptime"] = json["duration"] = '-'
+    if (run.id === 0)
+      json["status"] = "in progress"
+    else
+      json["status"] = "aborted"
+  } else json["status"] = "finished"
   return { ...run, ...json };
 }
 

@@ -7,6 +7,7 @@ import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
+import Chip from "@mui/material/Chip";
 import { random } from "mathjs";
 
 import RunHeader from "./runHeader.component";
@@ -42,6 +43,29 @@ const RunList = (props) => {
     { field: "Run type", headerName: "run type", width: 250 },
     { field: "starttime", headerName: "start time", width: 200 },
     { field: "duration", headerName: "duration", width: 150 },
+    {
+      field: "status",
+      headerName: "status",
+      width: 150,
+      renderCell: (params) => {
+        // params: GridRowParams
+        let chipColor = ''
+        if (params.value === "in progress")
+          chipColor = 'warning'
+        else if (params.value === "finished")
+          chipColor = 'success'
+        else if (params.value === "aborted")
+        chipColor = 'error'
+
+        return (
+          <Chip
+          size="small"
+          label={params.value}
+          color={chipColor}
+        />
+        );
+      },
+    },
   ];
 
   const retrieveRunset = (setup) => {
