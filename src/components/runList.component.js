@@ -6,7 +6,6 @@ import { styles } from "../css-common";
 import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-import { GridRowParams } from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
 import { random } from "mathjs";
 
@@ -16,36 +15,22 @@ class RunList extends Component {
   constructor(props) {
     super(props);
     this.retrieveRunset = this.retrieveRunset.bind(this);
+    this.renderRunNumberLink = this.renderRunNumberLink.bind(this);
 
     this.state = {
       runset: [],
       pageSize: 15,
-      setup: this.props.match.params.setup,
+      setup: this.props.setup,
     };
+
+    this.a = this.state.setup;
 
     this.columns = [
       {
         field: "runid",
         headerName: "run #",
         width: 120,
-        renderCell: function (params: GridRowParams) {
-          return (
-            <Link
-              component={RouterLink}
-              to={{
-                pathname: process.env.REACT_APP_BASEURL + "/run",
-                state: {
-                  runSet: params.api.state.rows.idRowsLookup,
-                  runCount: Object.keys(params.api.state.rows.idRowsLookup)
-                    .length,
-                  idnum: params.row.id,
-                },
-              }}
-            >
-              <strong>{params.value}</strong>
-            </Link>
-          );
-        },
+        renderCell: this.renderRunNumberLink,
       },
       { field: "Shifter", headerName: "shifter", width: 150 },
       { field: "Run type", headerName: "run type", width: 250 },
@@ -54,13 +39,30 @@ class RunList extends Component {
     ];
   }
 
+  renderRunNumberLink(params) {   // params: GridRowParams
+    const newTo = {
+      pathname: process.env.REACT_APP_BASEURL + "/run",
+      state: {
+        runSet: params.api.state.rows.idRowsLookup,
+        runCount: Object.keys(params.api.state.rows.idRowsLookup).length,
+        idnum: params.row.id,
+        setup: this.props.setup
+      },
+    };
+    return (
+      <Link to={newTo} component={RouterLink}>
+        <strong>{params.value}</strong>
+      </Link>
+    );
+  }
+
   componentDidMount() {
     this.retrieveRunset();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.setup !== this.props.match.params.setup) {
-      this.setState({ setup: this.props.match.params.setup });
+    if (prevState.setup !== this.props.setup) {
+      this.setState({ setup: this.props.setup });
       this.retrieveRunset();
     }
   }
@@ -80,7 +82,7 @@ class RunList extends Component {
   render() {
     return (
       <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <RunHeader setup={this.state.setup}/>
+        <RunHeader setup={this.state.setup} />
         <Box
           key={random()}
           mt={1}

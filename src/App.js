@@ -14,7 +14,14 @@ import RunDetails from "./components/runDetails.component";
 import RunTest from "./components/runTest.component";
 
 class App extends Component {
-  
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      setup: "setup-1",
+    };
+  }
+
   render() {
     const { classes } = this.props;
     const baseurl = process.env.REACT_APP_BASEURL;
@@ -33,6 +40,7 @@ class App extends Component {
               }}
               color="inherit"
               sx={{ m: 2 }}
+              onClick={() => this.setState({setup: 'setup-1'})}
             >
               Setup-1
             </Button>
@@ -43,18 +51,23 @@ class App extends Component {
               }}
               color="inherit"
               sx={{ m: 2 }}
+              onClick={() => this.setState({setup: 'setup-2'})}
             >
               Setup-2
             </Button>
           </Toolbar>
         </AppBar>
         <Switch>
-          <Route exact path={baseurl === '' ? '/' : baseurl}>
-            <Redirect to={baseurl +"/runlist/setup-1"} />
+          <Route exact path={baseurl === "" ? "/" : baseurl}>
+            <Redirect to={baseurl + "/runlist/setup-1"} />
           </Route>
-          <Route path={baseurl + "/runlist/:setup"} component={RunList} />
-          <Route path={baseurl + "/run"} component={RunDetails} />
-          <Route path={baseurl + "/test"} component={RunTest} />
+          <Route path={baseurl + "/runlist/:setup"}>
+            <RunList setup={this.state.setup} />
+          </Route>
+          <Route path={baseurl + "/run"} component={RunDetails}/>
+          <Route path={baseurl + "/test"}>
+            <RunTest setup={this.state.setup} />
+          </Route>
         </Switch>
       </div>
     );
