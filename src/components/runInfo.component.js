@@ -1,6 +1,4 @@
 import React from "react";
-import { styles } from "../css-common";
-import { withStyles } from "@mui/styles";
 
 const RunInfo = (props) => {
   return (
@@ -10,4 +8,4 @@ const RunInfo = (props) => {
   );
 }
 
-export default withStyles(styles)(RunInfo);
+export default RunInfo;

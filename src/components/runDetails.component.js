@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { styles } from "../css-common";
 
-import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -131,4 +129,4 @@ const RunDetails = (props) => {
   );
 };
 
-export default withStyles(styles)(RunDetails);
+export default RunDetails;

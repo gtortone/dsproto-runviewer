@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import RunDataService from "../services/run.service";
-import { styles } from "../css-common";
 
-import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -84,4 +82,4 @@ class RunDetails extends Component {
   }
 }
 
-export default withStyles(styles)(RunDetails);
+export default RunDetails;

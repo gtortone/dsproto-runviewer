@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import RunDataService from "../services/run.service";
-import { styles } from "../css-common";
+import { makeStyles } from "@material-ui/core";
 
-import { withStyles } from "@mui/styles";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
@@ -12,9 +11,25 @@ import { random } from "mathjs";
 
 import RunHeader from "./runHeader.component";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& .MuiDataGrid-renderingZone": {
+      "& .MuiDataGrid-row": {
+        "&:nth-child(2n)": {
+          backgroundColor: "rgba(235, 235, 235, .7)",
+        },
+      },
+    },
+    "& .MuiDataGrid-cell:focus": {
+        outline: "none",
+      }
+  },
+}));
+
 const RunList = (props) => {
   const [runset, setRunset] = useState([]);
   const [pageSize, setPageSize] = useState(15);
+  const classes = useStyles();
 
   let columns = [
     {
@@ -49,21 +64,12 @@ const RunList = (props) => {
       width: 150,
       renderCell: (params) => {
         // params: GridRowParams
-        let chipColor = ''
-        if (params.value === "in progress")
-          chipColor = 'warning'
-        else if (params.value === "finished")
-          chipColor = 'success'
-        else if (params.value === "aborted")
-        chipColor = 'error'
+        let chipColor = "";
+        if (params.value === "in progress") chipColor = "warning";
+        else if (params.value === "finished") chipColor = "success";
+        else if (params.value === "aborted") chipColor = "error";
 
-        return (
-          <Chip
-          size="small"
-          label={params.value}
-          color={chipColor}
-        />
-        );
+        return <Chip size="small" label={params.value} color={chipColor} />;
       },
     },
   ];
@@ -96,6 +102,7 @@ const RunList = (props) => {
         }}
       >
         <DataGrid
+          className={classes.root}
           autoHeight
           rowHeight={32}
           rows={runset}
@@ -114,4 +121,4 @@ const RunList = (props) => {
   );
 };
 
-export default withStyles(styles)(RunList);
+export default RunList;

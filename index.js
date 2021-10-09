@@ -83,6 +83,7 @@ runapp.get("/api/:setup/runset", (req, res) => {
 runapp.get("/api/:setup/runset/:id", (req, res) => {
   const id = req.params.id;
   const setup = req.params.setup;
+  let table = ''
 
   if (setup === "setup-1") table = "Runlog-cdaq";
   else if (setup === "setup-2") table = "Runlog-daq";

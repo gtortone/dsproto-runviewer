@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { styles } from "../css-common";
-import { withStyles } from "@mui/styles";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -56,4 +54,4 @@ const RunTest = (props) => {
   );
 };
 
-export default withStyles(styles)(RunTest);
+export default RunTest;

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
-import { styles } from "./css-common";
-import { withStyles } from "@mui/styles";
 
 import AppToolBar from "./components/appToolBar.component";
 import RunList from "./components/runList.component";
@@ -36,4 +34,4 @@ const App = (props) => {
   );
 };
 
-export default withStyles(styles)(App);
+export default App;

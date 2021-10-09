@@ -1,6 +1,4 @@
 import React from "react";
-import { styles } from "../css-common";
-import { withStyles } from "@mui/styles";
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -20,4 +18,4 @@ const RunHeader = (props) => {
   );
 }
 
-export default withStyles(styles)(RunHeader);
+export default RunHeader;

@@ -1,23 +1,30 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { styles } from "../css-common";
-import { withStyles } from "@mui/styles";
+import { makeStyles } from "@material-ui/core";
+
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "50px",
+    "& .MuiToolbar-regular": {
+      minHeight: "50px",
+    },
+  },
+}));
+
 const AppToolBar = (props) => {
-  const { classes } = props;
+  const classes = useStyles();
   const baseurl = process.env.REACT_APP_BASEURL;
 
   return (
     <div>
-      <AppBar className={classes.appBar} position="static">
+      <AppBar className={classes.root} position="static">
         <Toolbar>
-          <Typography className={classes.name} variant="h6">
-            Run Viewer
-          </Typography>
+          <Typography variant="h6">Run Viewer</Typography>
           <Button
             component={RouterLink}
             to={{
@@ -25,7 +32,7 @@ const AppToolBar = (props) => {
             }}
             color="inherit"
             sx={{ m: 2 }}
-            onClick={() => props.changeSetup('setup-1')}
+            onClick={() => props.changeSetup("setup-1")}
           >
             Setup-1
           </Button>
@@ -36,7 +43,7 @@ const AppToolBar = (props) => {
             }}
             color="inherit"
             sx={{ m: 2 }}
-            onClick={() => props.changeSetup('setup-2')}
+            onClick={() => props.changeSetup("setup-2")}
           >
             Setup-2
           </Button>
@@ -46,4 +53,4 @@ const AppToolBar = (props) => {
   );
 };
 
-export default withStyles(styles)(AppToolBar);
+export default AppToolBar;
