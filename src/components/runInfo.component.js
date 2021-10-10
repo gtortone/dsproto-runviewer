@@ -41,10 +41,10 @@ const RunInfo = (props) => {
           disabled={id === runCount - 1}
           onClick={showPrevRun}
         >
-          <Typography variant="h7">Previous run</Typography>
+          <Typography variant="button">Previous run</Typography>
         </Button>
         <Button sx={{ width: 1 / 5 }} disabled={id === 0} onClick={showNextRun}>
-          <Typography variant="h7">Next run</Typography>
+          <Typography variant="button">Next run</Typography>
         </Button>
       </ButtonGroup>
     );
