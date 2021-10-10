@@ -3,8 +3,9 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
 
 import AppToolBar from "./components/appToolBar.component";
+import RunHeader from "./components/runHeader.component";
 import RunList from "./components/runList.component";
-import RunDetails from "./components/runDetails.component";
+import RunInfo from "./components/runInfo.component";
 import RunTest from "./components/runTest.component";
 
 const App = (props) => {
@@ -18,6 +19,7 @@ const App = (props) => {
   return (
     <div>
       <AppToolBar changeSetup={changeSetup} />
+      <RunHeader setup={setup} />
       <Switch>
         <Route exact path={baseurl === "" ? "/" : baseurl}>
           <Redirect to={baseurl + "/runlist"} setup={"setup-1"} />
@@ -25,7 +27,7 @@ const App = (props) => {
         <Route path={baseurl + "/runlist"}>
           <RunList setup={setup} />
         </Route>
-        <Route path={baseurl + "/run"} component={RunDetails} />
+        <Route path={baseurl + "/run"} component={RunInfo} />
         <Route path={baseurl + "/test"}>
           <RunTest setup={setup} />
         </Route>

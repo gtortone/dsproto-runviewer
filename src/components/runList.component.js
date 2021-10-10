@@ -9,8 +9,6 @@ import Link from "@mui/material/Link";
 import Chip from "@mui/material/Chip";
 import { random } from "mathjs";
 
-import RunHeader from "./runHeader.component";
-
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiDataGrid-renderingZone": {
@@ -90,7 +88,6 @@ const RunList = (props) => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <RunHeader setup={props.setup} />
       <Box
         key={random()}
         mt={1}
