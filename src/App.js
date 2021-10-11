@@ -31,6 +31,13 @@ const App = (props) => {
         <Route path={baseurl + "/test"}>
           <RunTest setup={setup} />
         </Route>
+        {/* Routes for URL based setup-1 / setup-2 */}
+        <Route path={baseurl + "/setup-1"}>
+          <RunList setup={'setup-1'} />
+        </Route>
+        <Route path={baseurl + "/setup-2"}>
+          <RunList setup={'setup-2'} />
+        </Route>
       </Switch>
     </div>
   );
