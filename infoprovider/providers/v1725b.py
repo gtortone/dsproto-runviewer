@@ -8,6 +8,7 @@ class V1725BProvider:
 
         if mclient.odb_exists(basedir) is True:
             self.data['description'] = 'V1725B boards'
+            self.data['eventsSent'] = int(mclient.odb_get(f'{basedir}/Statistics/Events sent'))
             moduleList = []
             for board in range(0,16):
                 if mclient.odb_exists(f'{basedir}/Settings/Board{board}'):

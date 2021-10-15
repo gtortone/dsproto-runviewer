@@ -81,7 +81,7 @@ else:                       # run 'stop' detected
         update = f'UPDATE params SET jsonStop = \'{jsonDoc}\' WHERE run = {runNumber}'
         cursor.execute(update)
     else:
-        print('E: jsonStop already present')
+        print(f'E: jsonStop already present (run {runNumber})')
         sys.exit(-1)
 
 db.commit()

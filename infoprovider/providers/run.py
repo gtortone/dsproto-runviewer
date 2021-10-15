@@ -15,5 +15,10 @@ class RunProvider:
             self.data['stopTime'] = mclient.odb_get(f'{basedir}/Stop time')
             self.data['stopTimestamp'] = mclient.odb_get(f'{basedir}/Stop time binary')  # =0 during run
 
+        if mclient.odb_exists('/Experiment/Edit on Start'):
+            odict = mclient.odb_get('/Experiment/Edit on Start')
+            for key in odict.keys():
+                self.data[key] = odict[key]
+
     def getData(self):
         return self.data
