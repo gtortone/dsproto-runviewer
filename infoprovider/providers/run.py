@@ -1,4 +1,5 @@
 
+import datetime
 from providers.utils import camelCase
 
 class RunProvider:
@@ -16,6 +17,9 @@ class RunProvider:
             if stopTimestamp != 0:
                 self.data['stopTime'] = mclient.odb_get(f'{basedir}/Stop time')
                 self.data['stopTimestamp'] = stopTimestamp
+                durationSec = int(self.data['stopTimestamp']) - int(self.data['startTimestamp'])
+                durationStr = str(datetime.timedelta(seconds=durationSec))
+                self.data['duration'] = durationStr
 
         if mclient.odb_exists('/Experiment/Edit on Start'):
             odict = mclient.odb_get('/Experiment/Edit on Start')
