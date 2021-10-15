@@ -18,8 +18,8 @@ class SteeringModuleProvider:
             for channel in range(0,25):
                 channelItem = {}
                 channelItem['number'] = channel
-                channelItem['lowVoltage'] = mclient.odb_get(f'{basedir}/Settings/Low voltage[{channel}]')
-                channelItem['highVoltage'] = mclient.odb_get(f'{basedir}/Settings/High voltage[{channel}]')
+                channelItem['lowVoltage'] = bool(mclient.odb_get(f'{basedir}/Settings/Low voltage[{channel}]'))
+                channelItem['highVoltage'] = bool(mclient.odb_get(f'{basedir}/Settings/High voltage[{channel}]'))
                 channelList.append(channelItem)
 
             moduleItem['channels'] = channelList

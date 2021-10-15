@@ -7,9 +7,9 @@ class LoggerProvider:
         self.data = {}
         
         if mclient.odb_exists(basedir) is True:
-            self.data['writeData'] =  mclient.odb_get(f'{basedir}/Write data')
-            self.data['eventsWritten'] = mclient.odb_get(f'{basedir}/Channels/0/Statistics/Events written')
-            self.data['bytesWritten'] = mclient.odb_get(f'{basedir}/Channels/0/Statistics/Bytes written')
+            self.data['writeData'] = bool(mclient.odb_get(f'{basedir}/Write data'))
+            self.data['eventsWritten'] = int(mclient.odb_get(f'{basedir}/Channels/0/Statistics/Events written'))
+            self.data['bytesWritten'] = int(mclient.odb_get(f'{basedir}/Channels/0/Statistics/Bytes written'))
             self.data['diskLevel'] = mclient.odb_get(f'{basedir}/Channels/0/Statistics/Disk level')
 
     def getData(self):
