@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import argparse
 import midas.client
 import json
 import mysql.connector as mysql
+from dotenv import load_dotenv
 
 from providers.run import RunProvider
 from providers.logger import LoggerProvider
@@ -12,6 +14,8 @@ from providers.hv import HVProvider
 from providers.lakeshore import LakeshoreProvider
 from providers.steering import SteeringModuleProvider
 from providers.v1725b import V1725BProvider
+
+load_dotenv()
 
 parser = argparse.ArgumentParser(description="DS Proto MIDAS RunViewer information provider")
 parser.add_argument('--setup', action='store', type=int, help='specify DS proto setup [1, 2]', choices=[1,2])
@@ -58,10 +62,10 @@ if args.dump:
 
 try:
     db = mysql.connect(
-        host='darkside-stor',
-        user='runviewer',
-        password='R:unView3r',
-        database='ds'
+        host=os.getenv('DBHOST'),
+        user=os.getenv('DBUSER'),
+        password=os.getenv('DBPASS'),
+        database=os.getenv('DBNAME')
     )
 except Error as e:
     print('E: MySQL connection failed')

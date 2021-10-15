@@ -1,0 +1,4 @@
+midas.egg==info
+midas==0.4.3
+mysql_connector_repackaged==0.3.1
+python-dotenv==0.19.1
