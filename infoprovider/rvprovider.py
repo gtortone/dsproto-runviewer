@@ -61,7 +61,7 @@ try:
         host='darkside-stor',
         user='runviewer',
         password='R:unView3r',
-        database='setup1'
+        database='ds'
     )
 except Error as e:
     print('E: MySQL connection failed')
@@ -69,16 +69,16 @@ except Error as e:
 
 cursor = db.cursor()
 
-select = f'SELECT * from params WHERE run = {runNumber}'
+select = f'SELECT * from ds.params WHERE setup = {args.setup} AND run = {runNumber}'
 cursor.execute(select)
 records = cursor.fetchall()
 
 if len(records) == 0:       # run 'start' detected
-    insert = f'INSERT INTO params VALUES ({runNumber}, \'{jsonDoc}\', NULL)'
+    insert = f'INSERT INTO ds.params VALUES (NULL, {args.setup}, {runNumber}, \'{jsonDoc}\', NULL)'
     cursor.execute(insert)
 else:                       # run 'stop' detected
-    if records[0][2] is None:
-        update = f'UPDATE params SET jsonStop = \'{jsonDoc}\' WHERE run = {runNumber}'
+    if records[0][4] is None:
+        update = f'UPDATE ds.params SET jsonStop = \'{jsonDoc}\' WHERE setup = {args.setup} AND run = {runNumber}'
         cursor.execute(update)
     else:
         print(f'E: jsonStop already present (run {runNumber})')
