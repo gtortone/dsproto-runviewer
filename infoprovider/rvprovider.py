@@ -105,7 +105,10 @@ if odbSource == 'ONLINE':
         # update start summary
         db.updateStartField(args.setup, runNumber, json.dumps(summary))
 elif odbSource == 'FILE':
-    db.updateStartField(args.setup, runNumber, json.dumps(summaryStart))
-    db.updateStopField(args.setup, runNumber, json.dumps(summaryStop))
+    if not db.hasRun(args.setup, runNumber):
+        db.updateStartField(args.setup, runNumber, json.dumps(summaryStart))
+        db.updateStopField(args.setup, runNumber, json.dumps(summaryStop))
+    else:
+        print(f"I: run {runNumber} already in db - no action executed")
 
 sys.exit(0)
