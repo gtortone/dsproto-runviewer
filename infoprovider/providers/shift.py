@@ -7,6 +7,8 @@ class ShiftProvider:
         self.data = {}
 
         for k,v in odb.items():
+            if "key" in k:
+                continue
             self.data[camelCase(k)] = v
 
     def getData(self):
