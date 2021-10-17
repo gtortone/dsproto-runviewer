@@ -25,4 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 
 infoprovider/providers/__pycache__
+infoprovider/db/__pycache__
+infoprovider/config/__pycache__
 infoprovider/.env
