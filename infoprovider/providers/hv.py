@@ -1,49 +1,45 @@
 
 class HVProvider:
     
-    def __init__(self, mclient, slots, channels, metrics, basedir='/Equipment/CAEN_HV'):
-        self.mclient = mclient
+    def __init__(self, odb, slots, channels, metrics):
         self.slots = slots
         self.channels = channels
         self.metrics = metrics
-        self.basedir = basedir
         self.data = {}
 
-        if mclient.odb_exists(basedir) is True:
-            hvTree = mclient.odb_get(basedir)
-            self.data['description'] = 'high voltage'
-            moduleList = []
-            slotIndex = 0
-            for slot in self.slots:
-                moduleItem = {}
-                moduleItem['name'] = mclient.odb_get(f'{basedir}/Status/Slot {slot}/Model')
-                moduleItem['description'] = mclient.odb_get(f'{basedir}/Status/Slot {slot}/Description')
+        self.data['description'] = 'high voltage'
+        moduleList = []
+        slotIndex = 0
+        for slot in self.slots:
+            moduleItem = {}
+            moduleItem['name'] = odb['Status'][f'Slot {slot}']['Model']
+            moduleItem['description'] = odb['Status'][f'Slot {slot}']['Description']
 
-                channelList = []
-                for channel in channels[slotIndex]:
-                    channelItem = {}
-                    channelItem['number'] = channel
-                    channelItem['name'] = mclient.odb_get(f'{basedir}/Settings/Slot {slot}/ChName[{channel}]')
-                    metricList = []
-                    for metric in metrics[slotIndex]:
-                        metricItem = {}
-                        metricItem['name'] = metric
-                        subdir = 'Settings' if 'Set' in metric else 'Status'
-                        metricItem['value'] = mclient.odb_get(f'{basedir}/{subdir}/Slot {slot}/{metric}[{channel}]')
-                        if metric.find("(") != -1:
-                            metricItem['unit'] = metric[metric.find("(")+1:metric.find(")")]
+            channelList = []
+            for channel in channels[slotIndex]:
+                channelItem = {}
+                channelItem['number'] = channel
+                channelItem['name'] = odb['Settings'][f'Slot {slot}']['ChName'][channel]
+                metricList = []
+                for metric in metrics[slotIndex]:
+                    metricItem = {}
+                    metricItem['name'] = metric
+                    subdir = 'Settings' if 'Set' in metric else 'Status'
+                    metricItem['value'] = odb[subdir][f'Slot {slot}'][metric][channel]
+                    if metric.find("(") != -1:
+                        metricItem['unit'] = metric[metric.find("(")+1:metric.find(")")]
 
-                        metricList.append(metricItem)
+                    metricList.append(metricItem)
 
-                    channelItem['metrics'] = metricList
+                channelItem['metrics'] = metricList
 
-                    channelList.append(channelItem)
+                channelList.append(channelItem)
 
-                moduleItem['channels'] = channelList
-                moduleList.append(moduleItem)
-                slotIndex = slotIndex + 1
+            moduleItem['channels'] = channelList
+            moduleList.append(moduleItem)
+            slotIndex = slotIndex + 1
 
-            self.data['modules'] = moduleList
+        self.data['modules'] = moduleList
 
     def getData(self):
         return self.data

@@ -1,51 +1,49 @@
 
 class V1725BProvider:
     
-    def __init__(self, mclient, basedir='/Equipment/V1725_Data00'):
-        self.mclient = mclient
-        self.basedir = basedir
+    def __init__(self, odb):
         self.data = {}
+        self.odb = odb
 
-        if mclient.odb_exists(basedir) is True:
-            self.data['description'] = 'V1725B boards'
-            self.data['eventsSent'] = int(mclient.odb_get(f'{basedir}/Statistics/Events sent'))
-            moduleList = []
-            for board in range(0,16):
-                if mclient.odb_exists(f'{basedir}/Settings/Board{board}'):
-                    if mclient.odb_get(f'{basedir}/Settings/Board{board}/Enable'):
-                        moduleItem = {}
-                        moduleItem['name'] = f'V1725B board {board}'
+        self.data['description'] = 'V1725B boards'
+        self.data['eventsSent'] = int(odb['Statistics']['Events sent'])
+        moduleList = []
+        for board in range(0,16):
+            if f'Board{board}' in odb['Settings']:
+                if 'Enable' in odb['Settings'][f'Board{board}']:
+                    moduleItem = {}
+                    moduleItem['name'] = f'V1725B board {board}'
 
-                        channelList = []
-                        channels = self.getReadoutChannels( board)
-                        for channel in channels:
-                            channelItem = {}
-                            channelItem['number'] = channel
-                            channelItem['dacOffset'] = mclient.odb_get(f'{basedir}/Settings/Board{board}/DAC[{channel}]')
-                            dynamicRange = mclient.odb_get(f'{basedir}/Settings/Board{board}/Dynamic Range 2V (y) 0.5V (n)[{channel}]')
-                            channelItem['dynamicRange'] = '2V' if dynamicRange else '0.5V'
-                            channelList.append(channelItem)
+                    channelList = []
+                    channels = self.getReadoutChannels(board)
+                    for channel in channels:
+                        channelItem = {}
+                        channelItem['number'] = channel
+                        channelItem['dacOffset'] = int(odb['Settings'][f'Board{board}']['DAC'][channel], 16)
+                        dynamicRange = odb['Settings'][f'Board{board}']['Dynamic Range 2V (y) 0.5V (n)'][channel]
+                        channelItem['dynamicRange'] = '2V' if dynamicRange else '0.5V'
+                        channelList.append(channelItem)
 
-                        moduleItem['channels'] = channelList
-                        moduleItem['waveform'] = self.getWaveformSetup(board)
-                        moduleItem['triggerSource'] = self.getTriggerSource(board)
-                        moduleItem['triggerOutput'] = self.getTriggerOutput(board)
+                    moduleItem['channels'] = channelList
+                    moduleItem['waveform'] = self.getWaveformSetup(board)
+                    moduleItem['triggerSource'] = self.getTriggerSource(board)
+                    moduleItem['triggerOutput'] = self.getTriggerOutput(board)
 
-                        if 'couples' in moduleItem['triggerSource']:
-                            polValue = mclient.odb_get(f'{basedir}/Settings/Board{board}/Board Configuration')
-                            polarity = 'under-threshold' if polValue & 0x40 else 'over-threshold'
-                            moduleItem['selfTriggerPolarity'] = polarity
+                    if 'couples' in moduleItem['triggerSource']:
+                        polValue = odb['Settings'][f'Board{board}']['Board Configuration']
+                        polarity = 'under-threshold' if polValue & 0x40 else 'over-threshold'
+                        moduleItem['selfTriggerPolarity'] = polarity
 
-                        moduleList.append(moduleItem)
+                    moduleList.append(moduleItem)
 
-        self.data['modules'] = moduleList 
+                    self.data['modules'] = moduleList 
 
     def getData(self):
         return self.data
 
     def getReadoutChannels(self, board):
         channels = []
-        mask = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/Channel Mask')
+        mask = int(self.odb['Settings'][f'Board{board}']['Channel Mask'], 16)
         for i in range(0,16):
             if (mask & (1<<i)):
                 channels.append(i)
@@ -56,8 +54,8 @@ class V1725BProvider:
         sramSize = 5120000  # SRAM size of V7125B
         numBuffers = [ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 ]     # use 'Buffer organization' as index
         timeUnits = [ 'ns', 'us', 'ms' ]
-        bufferOrganization = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/Buffer organization')
-        customSize = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/Custom size')
+        bufferOrganization = self.odb['Settings'][f'Board{board}']['Buffer organization']
+        customSize = self.odb['Settings'][f'Board{board}']['Custom size']
 
         if(customSize != 0):
             wfSetup['samplesNumber'] = customSize * 10
@@ -72,7 +70,7 @@ class V1725BProvider:
         wfSetup['timeWidth'] = timeWidth
         wfSetup['timeUnit'] = timeUnits[index]
 
-        postTriggerSamples = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/Post Trigger')
+        postTriggerSamples = int(self.odb['Settings'][f'Board{board}']['Post Trigger'], 16)
         postTriggerWidth = postTriggerSamples * 4 * 4
         index = 0
         while postTriggerWidth >= 1000:
@@ -82,14 +80,14 @@ class V1725BProvider:
         wfSetup['postTriggerUnit'] = timeUnits[index]
 
         wfSetup['totalBuffers'] = numBuffers[bufferOrganization]
-        wfSetup['almostFullLevel'] = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/almost_full')
+        wfSetup['almostFullLevel'] = int(self.odb['Settings'][f'Board{board}']['almost_full'], 16)
 
         return wfSetup
 
     def getTriggerSource(self, board):
             logic = ['AND','CH(n)','CH(n+1)','OR']
             triggerSource = {}
-            mask = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/Trigger Source')
+            mask = int(self.odb['Settings'][f'Board{board}']['Trigger Source'], 16)
 
             # signals
             signalsList = []
@@ -108,7 +106,7 @@ class V1725BProvider:
                 if mask & (1 << couple):
                     coupleItem = {}
                     coupleItem['coupleNumber'] = couple
-                    logicValue = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/SelfTrigger_Logic[{couple}]')
+                    logicValue = self.odb['Settings'][f'Board{board}']['SelfTrigger_Logic'][couple]
                     coupleItem['logic'] = logic[logicValue]
 
                     channelList = []
@@ -116,19 +114,19 @@ class V1725BProvider:
                         for channel in [couple*2, couple*2 + 1]:
                             channelItem = {}
                             channelItem['number'] = channel
-                            channelItem['threshold'] = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/SelfTrigger_Threshold[{channel}]')
+                            channelItem['threshold'] = self.odb['Settings'][f'Board{board}']['SelfTrigger_Threshold'][channel]
                             channelList.append(channelItem)
                     elif (logicValue == 1):
                         channelItem = {}
                         channel = couple * 2
                         channelItem['number'] = channel
-                        channelItem['threshold'] = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/SelfTrigger_Threshold[{channel}]')
+                        channelItem['threshold'] = self.odb['Settings'][f'Board{board}']['SelfTrigger_Threshold'][channel]
                         channelList.append(channelItem)
                     elif (logicValue == 2):
                         channelItem = {}
                         channel = couple * 2 + 1
                         channelItem['number'] = channel
-                        channelItem['threshold'] = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/SelfTrigger_Threshold[{channel}]')
+                        channelItem['threshold'] = self.odb['Settings'][f'Board{board}']['SelfTrigger_Threshold'][channel]
                         channelList.append(channelItem)
 
                     coupleItem['channels'] = channelList
@@ -143,7 +141,7 @@ class V1725BProvider:
     def getTriggerOutput(self, board):
             logic = ['OR','AND','MAJ']
             triggerOutput = {}
-            mask = self.mclient.odb_get(f'{self.basedir}/Settings/Board{board}/Trigger Output')
+            mask = int(self.odb['Settings'][f'Board{board}']['Trigger Output'], 16)
 
             # signals
             signalsList = []

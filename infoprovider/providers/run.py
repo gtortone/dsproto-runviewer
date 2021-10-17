@@ -1,30 +1,21 @@
 
 import datetime
-from providers.utils import camelCase
 
 class RunProvider:
     
-    def __init__(self, mclient, basedir='/Runinfo'):
-        self.mclient = mclient
-        self.basedir = basedir
+    def __init__(self, odb):
         self.data = {}
 
-        if mclient.odb_exists(basedir) is True:
-            self.data['runNumber'] = mclient.odb_get(f'{basedir}/Run number')
-            self.data['startTime'] = mclient.odb_get(f'{basedir}/Start time')
-            self.data['startTimestamp'] = mclient.odb_get(f'{basedir}/Start time binary')
-            stopTimestamp = mclient.odb_get(f'{basedir}/Stop time binary')
-            if stopTimestamp != 0:
-                self.data['stopTime'] = mclient.odb_get(f'{basedir}/Stop time')
-                self.data['stopTimestamp'] = stopTimestamp
-                durationSec = int(self.data['stopTimestamp']) - int(self.data['startTimestamp'])
-                durationStr = str(datetime.timedelta(seconds=durationSec))
-                self.data['duration'] = durationStr
-
-        if mclient.odb_exists('/Experiment/Edit on Start'):
-            odict = mclient.odb_get('/Experiment/Edit on Start')
-            for k,v in odict.items():
-                self.data[camelCase(k)] = v
+        self.data['runNumber'] = odb['Run number']
+        self.data['startTime'] = odb['Start time']
+        self.data['startTimestamp'] = int(odb['Start time binary'], 16)
+        stopTimestamp = int(odb['Stop time binary'], 16)
+        if stopTimestamp != 0:
+            self.data['stopTime'] = odb['Stop time']
+            self.data['stopTimestamp'] = stopTimestamp
+            durationSec = self.data['stopTimestamp'] - self.data['startTimestamp']
+            durationStr = str(datetime.timedelta(seconds=durationSec))
+            self.data['duration'] = durationStr
 
     def getData(self):
         return self.data
