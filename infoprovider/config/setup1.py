@@ -1,5 +1,6 @@
 
 from providers.run import RunProvider
+from providers.sequencer import SequencerProvider
 from providers.shift import ShiftProvider
 from providers.logger import LoggerProvider
 from providers.hv import HVProvider
@@ -13,6 +14,10 @@ def getSummary(odb):
 
     if 'Runinfo' in odb:
         dictMerged['RI'] = RunProvider(odb['Runinfo']).getData()
+
+    if 'Sequencer' in odb:
+        if bool(odb['Sequencer']['State']['Running']) is True:
+            dictMerged['SQ'] = SequencerProvider(odb['Sequencer']).getData()
 
     if 'Edit on Start' in odb['Experiment']:
         dictMerged['SI'] = ShiftProvider(odb['Experiment']['Edit on Start']).getData()
