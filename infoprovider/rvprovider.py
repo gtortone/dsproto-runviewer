@@ -65,8 +65,6 @@ else:
     odb = mclient.odb_get('/')
     mclient.disconnect()
 
-print(startOdb['Sequencer']['State']['Running'])
-
 summary = {}
 if(args.setup == 1):
     if odbSource == 'ONLINE':
