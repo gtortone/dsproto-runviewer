@@ -22,7 +22,6 @@ parser.add_argument('--run', action='store', type=int, help='run number')
 args = parser.parse_args()
 
 sys.dont_write_bytecode = True
-mclient = midas.client.MidasClient("rvprovider")
 
 # fetch whole ODB tree from file or online ODB
 if args.rundir and args.run:
@@ -62,7 +61,11 @@ if args.rundir and args.run:
 else:
     odbSource = 'ONLINE'
     print('I: fetch ODB from online')
+    mclient = midas.client.MidasClient("rvprovider")
     odb = mclient.odb_get('/')
+    mclient.disconnect()
+
+print(startOdb['Sequencer']['State']['Running'])
 
 summary = {}
 if(args.setup == 1):
