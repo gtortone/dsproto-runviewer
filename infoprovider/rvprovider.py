@@ -36,9 +36,21 @@ if args.rundir and args.run:
         print(f'E: directory {args.rundir} is empty')
         sys.exit(-1)
 
+    startFile = stopFile = None
     flist.sort()
-    startFile = flist[0]
-    stopFile = flist[len(flist)-1]
+    for f in flist:
+        if f.startswith('run'):
+            startFile = f
+            break
+    for f in reversed(flist):
+        if f.startswith('run'):
+            stopFile = f
+            break
+
+    if startFile is None or stopFile is None:
+        print(f'E: startFile or stopFile not found for run {args.run}')
+        sys.exit(-1)
+
     print(f'I: startFile: {startFile}, stopFile: {stopFile}')
 
     startOdb = stopOdb = None
@@ -47,12 +59,13 @@ if args.rundir and args.run:
     for event in mfile:
         if event.header.is_bor_event():
             startOdb = json.loads(event.non_bank_data)
+            break
     # stop file
     mfile = midas.file_reader.MidasFile(f'{args.rundir}/{stopFile}')
     for event in mfile:
         if event.header.is_eor_event():
             stopOdb = json.loads(event.non_bank_data)
-
+            break
     if startOdb is None and stopOdb is None:
         print("E: no BOR/EOR ODB found")
         sys.exit(-1)
