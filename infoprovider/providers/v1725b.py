@@ -26,6 +26,7 @@ class V1725BProvider:
                     channelItem['dacOffset'] = int(odb['Settings'][f'Board{board}']['DAC'][channel], 16)
                     dynamicRange = odb['Settings'][f'Board{board}']['Dynamic Range 2V (y) 0.5V (n)'][channel]
                     channelItem['dynamicRange'] = '2V' if dynamicRange else '0.5V'
+                    channelItem['threshold'] = int(self.odb['Settings'][f'Board{board}']['SelfTrigger_Threshold'][channel], 16)
                     channelList.append(channelItem)
 
                 moduleItem['channels'] = channelList
