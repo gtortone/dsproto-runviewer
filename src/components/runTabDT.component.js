@@ -23,6 +23,7 @@ const RunTabDT = (props) => {
       <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
         <Button
           href={historyURL(
+            props.setup,
             "Default",
             "Temperature",
             props.currentRun.info.startTimestamp,
