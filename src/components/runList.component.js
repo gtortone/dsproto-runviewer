@@ -56,7 +56,9 @@ const RunList = (props) => {
     { field: "shifter", headerName: "shifter", width: 150 },
     { field: "runType", headerName: "run type", width: 250 },
     { field: "startTime", headerName: "start time", width: 200 },
-    { field: "duration", headerName: "duration", width: 120 },
+    { field: "startTimestamp", hide: true },
+    { field: "stopTimestamp", hide: true },
+    { field: "duration", headerName: "duration", width: 120},
     {
       field: "writeData",
       headerName: "on disk",

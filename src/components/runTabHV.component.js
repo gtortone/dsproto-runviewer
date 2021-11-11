@@ -17,7 +17,10 @@ import historyURL from "../utils/mhistory";
 
 const RunTabHV = (props) => {
   const hvStart = props.currentRun.start.HV;
-  const hvStop = props.currentRun.stop.HV;
+  const hvStop =
+    props.currentRun.status === "finished"
+      ? props.currentRun.stop.HV
+      : undefined;
 
   const renderHVTable = (hv) => {
     return (
@@ -99,7 +102,9 @@ const RunTabHV = (props) => {
       }}
     >
       <RunBorSection>{hvStart && renderHVTable(hvStart)}</RunBorSection>
-      {props.currentRun.info.status === 'finished' && <RunEorSection>{hvStop && renderHVTable(hvStop)}</RunEorSection>}
+      {props.currentRun.info.status === "finished" && (
+        <RunEorSection>{hvStop && renderHVTable(hvStop)}</RunEorSection>
+      )}
     </Box>
   );
 };

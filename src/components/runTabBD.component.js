@@ -21,7 +21,7 @@ import RunEorSection from "./runEorSection.component";
 
 const RunTabBD = (props) => {
   const bdStart = props.currentRun.start.BD;
-  const bdStop = props.currentRun.stop.BD;
+  const bdStop = props.currentRun.status === 'finished' ? props.currentRun.stop.BD : undefined
 
   const renderListItem = (name, value) => {
     return (

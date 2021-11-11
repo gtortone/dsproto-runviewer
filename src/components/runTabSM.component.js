@@ -14,7 +14,10 @@ import RunEorSection from "./runEorSection.component";
 
 const RunTabSM = (props) => {
   const smStart = props.currentRun.start.SM;
-  const smStop = props.currentRun.stop.SM;
+  const smStop =
+    props.currentRun.status === "finished"
+      ? props.currentRun.stop.SM
+      : undefined;
 
   const renderLineStatus = (value) => {
     if (value) {
@@ -76,7 +79,9 @@ const RunTabSM = (props) => {
       }}
     >
       <RunBorSection>{smStart && renderSMTable(smStart)}</RunBorSection>
-      {props.currentRun.info.status === 'finished' && <RunEorSection>{smStop && renderSMTable(smStop)}</RunEorSection>}
+      {props.currentRun.info.status === "finished" && (
+        <RunEorSection>{smStop && renderSMTable(smStop)}</RunEorSection>
+      )}
     </Box>
   );
 };
