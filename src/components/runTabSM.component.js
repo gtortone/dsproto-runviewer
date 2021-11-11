@@ -15,7 +15,7 @@ import RunEorSection from "./runEorSection.component";
 const RunTabSM = (props) => {
   const smStart = props.currentRun.start.SM;
   const smStop =
-    props.currentRun.status === "finished"
+    props.currentRun.info.status === "finished"
       ? props.currentRun.stop.SM
       : undefined;
 

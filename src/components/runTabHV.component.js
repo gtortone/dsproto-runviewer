@@ -18,9 +18,11 @@ import historyURL from "../utils/mhistory";
 const RunTabHV = (props) => {
   const hvStart = props.currentRun.start.HV;
   const hvStop =
-    props.currentRun.status === "finished"
+    props.currentRun.info.status === "finished"
       ? props.currentRun.stop.HV
       : undefined;
+
+  console.log(hvStop)
 
   const renderHVTable = (hv) => {
     return (

@@ -16,7 +16,7 @@ import historyURL from "../utils/mhistory";
 
 const RunTabDT = (props) => {
   const dtStart = props.currentRun.start.DT;
-  const dtStop = props.currentRun.status === 'finished' ? props.currentRun.stop.DT : undefined
+  const dtStop = props.currentRun.info.status === 'finished' ? props.currentRun.stop.DT : undefined
 
   const renderDTTable = (dt) => {
     return (
