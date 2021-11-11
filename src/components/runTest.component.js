@@ -7,6 +7,7 @@ import { Typography } from "@mui/material";
 const RunTest = (props) => {
 
   const [id, setId] = useState(0)
+
   let maxId = 10
   let runset = [
     { description: "run number one", comment: "very good" },
@@ -22,13 +23,11 @@ const RunTest = (props) => {
   ];
 
   const showNextId = () => {
-    let newId = id + 1;
-    setId(newId);
+    setId(id + 1);
   }
 
   const showPrevId = () => {
-    let newId = id - 1;
-    setId(newId);
+    setId(id - 1);
   }
 
   return (

@@ -7,11 +7,11 @@ class RunDataService {
   }
 
   getAll(setup) {
-    return axios.get(`${this.baseurl}/api/${setup}/runset`);
+    return axios.get(`${this.baseurl}/api/${setup}/summary`);
   }
 
-  get(setup, id) {
-    return axios.get(`${this.baseurl}/api/${setup}/runset/${id}`);
+  get(setup, run) {
+    return axios.get(`${this.baseurl}/api/${setup}/${run}`);
   }
 }
 

@@ -23,27 +23,27 @@ const AppToolBar = (props) => {
   return (
     <div>
       <AppBar className={classes.root} position="static">
-        <Toolbar>
-          <Typography variant="h6">Run Viewer</Typography>
+        <Toolbar sx={{ display: "flex", flexDirection: "row", width: 4/5}}>
+          <Typography variant="h6" sx={{ display: "flex", justifyContent: "center", width: 0.5/5}}>Run Viewer</Typography>
           <Button
+            sx={{ display: "flex", justifyContent: "center", width: 0.5/5, p: 1 }}
             component={RouterLink}
             to={{
               pathname: baseurl + "/runlist",
             }}
             color="inherit"
-            sx={{ m: 2 }}
-            onClick={() => props.changeSetup("setup-1")}
+            onClick={() => props.changeSetup(1)}
           >
             Setup-1
           </Button>
           <Button
+            sx={{ display: "flex", justifyContent: "center", width: 0.5/5, p: 1 }}
             component={RouterLink}
             to={{
               pathname: baseurl + "/runlist",
             }}
             color="inherit"
-            sx={{ m: 2 }}
-            onClick={() => props.changeSetup("setup-2")}
+            onClick={() => props.changeSetup(2)}
           >
             Setup-2
           </Button>

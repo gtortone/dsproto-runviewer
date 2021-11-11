@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
 import Chip from "@mui/material/Chip";
+import Icon from "@mui/material/Icon";
 import { random } from "mathjs";
 
 const useStyles = makeStyles((theme) => ({
@@ -19,8 +20,8 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "& .MuiDataGrid-cell:focus": {
-        outline: "none",
-      }
+      outline: "none",
+    },
   },
 }));
 
@@ -31,7 +32,7 @@ const RunList = (props) => {
 
   let columns = [
     {
-      field: "runid",
+      field: "runNumber",
       headerName: "run #",
       width: 120,
       renderCell: (params) => {
@@ -52,10 +53,40 @@ const RunList = (props) => {
         );
       },
     },
-    { field: "Shifter", headerName: "shifter", width: 150 },
-    { field: "Run type", headerName: "run type", width: 250 },
-    { field: "starttime", headerName: "start time", width: 200 },
-    { field: "duration", headerName: "duration", width: 150 },
+    { field: "shifter", headerName: "shifter", width: 150 },
+    { field: "runType", headerName: "run type", width: 250 },
+    { field: "startTime", headerName: "start time", width: 200 },
+    { field: "duration", headerName: "duration", width: 120 },
+    {
+      field: "writeData",
+      headerName: "on disk",
+      width: 120,
+      renderCell: (params) => {
+        let icon = ''
+        let color = ''
+        if (params.value) {
+          icon = 'check_circle'
+          color = 'success'
+        }
+        else {
+          color = 'action'
+          icon = 'cancel'
+        }
+        return <Icon color={color} sx={{outlined: true}}>{icon}</Icon>;
+      },
+    },
+    {
+      field: "loopCounter",
+      headerName: "seq",
+      width: 120,
+      renderCell: (params) => {
+        let label = "-";
+        if (params.value !== undefined)
+          label = `${params.value}/${params.row["loopLimit"]}`;
+        return <div>{label}</div>;
+      },
+    },
+    { field: "loopLimit", hide: true },
     {
       field: "status",
       headerName: "status",
@@ -70,6 +101,7 @@ const RunList = (props) => {
         return <Chip size="small" label={params.value} color={chipColor} />;
       },
     },
+    { field: "eventsSent", headerName: "events", width: 150 },
   ];
 
   const retrieveRunset = (setup) => {
@@ -93,12 +125,20 @@ const RunList = (props) => {
         mt={1}
         sx={{
           height: 600,
-          width: "70%",
+          width: 4/5,
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignSelf: "center"
         }}
       >
         <DataGrid
+        sx = {{
+          width: 5/5,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center"
+        }}
           className={classes.root}
           autoHeight
           rowHeight={32}

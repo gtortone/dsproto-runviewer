@@ -1,6 +1,6 @@
+const e = require("express");
 const express = require("express");
 const mysql = require("mysql");
-const moment = require("moment");
 const path = require("path");
 require("dotenv").config();
 
@@ -18,84 +18,131 @@ app.use(express.json());
 
 const runapp = express.Router();
 
-function addMonData(run) {
-  let json = {};
-  let startTime = run["Start time"];
-  let stopTime = run["Stop time"];
-  json["starttime"] = moment(startTime).format("DD/MM/YYYY HH:mm:ss");
-  json["stoptime"] = moment(stopTime).format("DD/MM/YYYY HH:mm:ss");
-  json["duration"] = moment.utc(stopTime - startTime).format("HH:mm:ss");
-  if (stopTime == null) {
-    json["stoptime"] = json["duration"] = '-'
-    if (run.id === 0)
-      json["status"] = "in progress"
-    else
-      json["status"] = "aborted"
-  } else json["status"] = "finished"
-  return { ...run, ...json };
-}
+// Route to get all runs summary from a setup
+runapp.get("/api/:setup/summary", (req, res) => {
+  const setup = parseInt(req.params.setup);
 
-// Route to get all runs
-runapp.get("/api/runset", (req, res) => {
   db.query(
-    "SELECT *,`Run number` AS runid FROM `Runlog-cdaq` ORDER BY `Run number` DESC",
+    "SELECT * FROM params WHERE setup = ? ORDER BY run DESC",
+    setup,
     (err, result) => {
       if (err) {
         console.log(err);
       }
-      var id = 0;
-      result.map((obj) => {
-        obj["id"] = id++;
-        return obj;
+      let summary = [];
+      let status = "";
+      let eventsSent = "-";
+      result.map((obj, index) => {
+        let doc = {};
+        if (obj["jsonstop"] === null) {
+          // run not finished yet or aborted
+          doc = JSON.parse(obj["jsonstart"]);
+          if (index === 0) status = "in progress";
+          else status = "aborted";
+        } else {
+          doc = JSON.parse(obj["jsonstop"]);
+          eventsSent = parseInt(doc["BD"]["eventsSent"]);
+          status = "finished";
+        }
+        let summaryItem = {
+          id: index,
+          status,
+          eventsSent,
+          ...doc["RI"],
+          ...doc["SQ"],
+          ...doc["SI"],
+          ...doc["LI"],
+        };
+        summary.push(summaryItem);
       });
-      res.send(result.map(addMonData));
-    }
-  );
-});
 
-// Route to get all runs from a setup
-runapp.get("/api/:setup/runset", (req, res) => {
-  const setup = req.params.setup;
-  var table = "";
-
-  if (setup === "setup-1") table = "Runlog-cdaq";
-  else if (setup === "setup-2") table = "Runlog-daq";
-
-  db.query(
-    "SELECT *,`Run number` AS runid FROM `" +
-      table +
-      "` ORDER BY `Run number` DESC",
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      var id = 0;
-      result.map((obj) => {
-        obj["id"] = id++;
-        return obj;
-      });
-      res.send(result.map(addMonData));
+      res.send(summary);
     }
   );
 });
 
 // Route to get one run from a setup
-runapp.get("/api/:setup/runset/:id", (req, res) => {
-  const id = req.params.id;
+runapp.get("/api/:setup/:run", (req, res) => {
+  const run = req.params.run;
   const setup = req.params.setup;
-  let table = ''
+  let lastRunNumber = undefined;
 
-  if (setup === "setup-1") table = "Runlog-cdaq";
-  else if (setup === "setup-2") table = "Runlog-daq";
-
+  // get last run number for this setup
   db.query(
-    "SELECT *,`Run number` AS id FROM `" + table + "` WHERE `Run number` = ?",
-    id,
+    "SELECT * FROM params WHERE setup = ? ORDER BY run DESC LIMIT 1",
+    [setup],
     (err, result) => {
       if (err) {
         console.log(err);
       }
-      res.send(result.map(addMonData));
+      lastRunNumber = result[0].run;
+    }
+  );
+
+  // get run by setup and run number
+  db.query(
+    "SELECT * FROM params WHERE setup = ? AND run = ?",
+    [setup, run],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      let runItem = [];
+      let runDoc = {};
+      let runStatus = undefined;
+      if (result.length === 0) res.send(runItem);
+      else {
+        let runStart = JSON.parse(result[0]["jsonstart"]);
+        let runStop = JSON.parse(result[0]["jsonstop"]);
+        let runInfo = {};
+
+        if (runStop != null) {
+          runStatus = "finished";
+        } else {
+          if (runStart.RI.runNumber === lastRunNumber) {
+            runStatus = "in progress";
+          } else runStatus = "aborted";
+        }
+
+        // for finished run use runStop info
+        if (runStatus === "finished") {
+          runInfo = {
+            ...runStop["RI"],
+            ...runStop["SQ"],
+            ...runStop["SI"],
+            ...runStop["LI"],
+            status: runStatus,
+          };
+          delete runStart["RI"];
+          delete runStart["SQ"];
+          delete runStart["SI"];
+          delete runStart["LI"];
+          delete runStop["RI"];
+          delete runStop["SQ"];
+          delete runStop["SI"];
+          delete runStop["LI"];
+        } else {
+          // for in-progress or aborted run use runStart info
+          runInfo = {
+            ...runStart["RI"],
+            ...runStart["SQ"],
+            ...runStart["SI"],
+            ...runStart["LI"],
+            status: runStatus,
+          };
+          delete runStart["RI"];
+          delete runStart["SQ"];
+          delete runStart["SI"];
+          delete runStart["LI"];
+        }
+
+        // compose response
+        runDoc["info"] = runInfo;
+        runDoc["start"] = runStart;
+        runDoc["stop"] = runStop;
+        runItem.push(runDoc);
+        res.send(runItem);
+      }
     }
   );
 });
