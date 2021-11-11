@@ -4,7 +4,7 @@ import RunDataService from "../services/run.service";
 import { makeStyles } from "@material-ui/core";
 
 import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarContainer, GridToolbarFilterButton, GridToolbarExport} from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
 import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
@@ -55,10 +55,8 @@ const RunList = (props) => {
     },
     { field: "shifter", headerName: "shifter", width: 150 },
     { field: "runType", headerName: "run type", width: 250 },
-    { field: "startTime", headerName: "start time", width: 200 },
-    { field: "startTimestamp", hide: true },
-    { field: "stopTimestamp", hide: true },
-    { field: "duration", headerName: "duration", width: 120},
+    { field: "startTime", headerName: "start time", width: 200, filterable: false },
+    { field: "duration", headerName: "duration", width: 120, filterable: false},
     {
       field: "writeData",
       headerName: "on disk",
@@ -76,6 +74,7 @@ const RunList = (props) => {
         }
         return <Icon color={color} sx={{outlined: true}}>{icon}</Icon>;
       },
+      filterable: false
     },
     {
       field: "loopCounter",
@@ -87,8 +86,9 @@ const RunList = (props) => {
           label = `${params.value}/${params.row["loopLimit"]}`;
         return <div>{label}</div>;
       },
+      filterable: false
     },
-    { field: "loopLimit", hide: true },
+    { field: "loopLimit", hide: true, filterable: false },
     {
       field: "status",
       headerName: "status",
@@ -102,8 +102,9 @@ const RunList = (props) => {
 
         return <Chip size="small" label={params.value} color={chipColor} />;
       },
+      filterable: false
     },
-    { field: "eventsSent", headerName: "events", width: 150 },
+    { field: "eventsSent", headerName: "events", width: 150, filterable: false },
   ];
 
   const retrieveRunset = (setup) => {
@@ -119,6 +120,15 @@ const RunList = (props) => {
   useEffect(() => {
     retrieveRunset(props.setup);
   }, [props.setup]);
+
+  const CustomToolbar = () => {
+    return (
+      <GridToolbarContainer>
+        <GridToolbarFilterButton />
+        <GridToolbarExport />
+      </GridToolbarContainer>
+    );
+  }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -140,6 +150,9 @@ const RunList = (props) => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center"
+        }}
+        components={{
+          Toolbar: CustomToolbar,
         }}
           className={classes.root}
           autoHeight
