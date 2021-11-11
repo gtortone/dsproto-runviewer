@@ -48,7 +48,11 @@ if args.run:
     fdict = {}      # key is subrun
     for f in flist:
         if f.startswith(f'run{run}'):
-            subrun = int(re.findall('\d+', f)[1])
+            mlist = re.findall('\d+', f)
+            if len(mlist) > 1:
+                subrun = int(mlist[1])
+            else:
+                subrun = f
             fdict[subrun] = f
     sortedSubrun = sorted(fdict.keys())
     startFile = fdict[sortedSubrun[0]] 
@@ -63,16 +67,12 @@ if args.run:
     startOdb = stopOdb = None
     # start file
     mfile = midas.file_reader.MidasFile(f'{rundir}/{startFile}')
-    for event in mfile:
-        if event.header.is_bor_event():
-            startOdb = json.loads(event.non_bank_data)
-            break
+    startOdb = mfile.get_bor_odb_dump().data
+
     # stop file
     mfile = midas.file_reader.MidasFile(f'{rundir}/{stopFile}')
-    for event in mfile:
-        if event.header.is_eor_event():
-            stopOdb = json.loads(event.non_bank_data)
-            break
+    stopOdb = mfile.get_eor_odb_dump().data
+
     if startOdb is None and stopOdb is None:
         print("E: no BOR/EOR ODB found")
         sys.exit(-1)
