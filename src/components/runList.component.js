@@ -136,7 +136,6 @@ const RunList = (props) => {
         key={random()}
         mt={1}
         sx={{
-          height: 600,
           width: 4/5,
           display: "flex",
           flexDirection: "column",
