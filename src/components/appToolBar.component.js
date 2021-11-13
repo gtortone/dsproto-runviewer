@@ -29,8 +29,8 @@ const AppToolBar = (props) => {
 
   return (
     <Box>
-      <AppBar className={classes.root} sx={{ display: "flex", flexDirection: "row", width: 5/5}} position="static">
-        <Toolbar sx={{ display: "flex", flexDirection: "row", width: 5/5, bgcolor: 'primary.dark'}}>
+      <AppBar className={classes.root} sx={{ display: "flex", flexDirection: "row", width: 5/5, color: "white"}} position="static">
+        <Toolbar sx={{ display: "flex", flexDirection: "row", width: 5/5, bgcolor: 'primary.dark', color: "white"}}>
           <Typography variant="h6" sx={{ display: "flex", justifyContent: "center", width: 0.5/5, color: 'white'}}>Run Viewer</Typography>
           <AppBarButton
             sx={{ display: "flex", justifyContent: "center", width: 0.5/5, p: 1 }}
