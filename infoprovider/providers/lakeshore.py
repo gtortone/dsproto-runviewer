@@ -17,6 +17,7 @@ class LakeshoreProvider:
             channelItem['name'] = f'T{channel}'
             channelItem['value'] = odb['Variables']['TEMP'][channel]
             channelItem['flag'] = odb['Variables']['FLAG'][channel]
+            channelItem['unit'] = 'K'
 
             channelList.append(channelItem)
 
