@@ -35,7 +35,9 @@ def getSummary(odb):
         dictMerged['SM'] = SteeringModuleProvider(odb['Equipment'][smName]).getData()
 
     if 'EpicsFrontend' in odb['Equipment']:
-        dictMerged['DT'] = CryoEpicsProvider(odb['Equipment']['EpicsFrontend']).getData()
+        data = CryoEpicsProvider(odb['Equipment']['EpicsFrontend']).getData()
+        if len(data['modules'][0]['channels']) > 0:
+            dictMerged['DT'] = data
 
     if 'VX2740_Data_Group_000' in odb['Equipment']:
         dictMerged['BD'] = VX2740Provider(odb['Equipment']['VX2740_Config_Group_000'], odb['Equipment']['VX2740_Data_Group_000']).getData()
