@@ -45,7 +45,6 @@ const RunInfo = (props) => {
     return (
       <Box
         sx={{
-          m: 1,
           display: "flex",
           flexDirection: "column",
         }}
