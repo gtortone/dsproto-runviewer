@@ -24,8 +24,15 @@ def getSummary(odb):
     if 'Logger' in odb:
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
 
-    if 'SteeringModule' in odb['Equipment']:
-        dictMerged['SM'] = SteeringModuleProvider(odb['Equipment']['SteeringModule']).getData()
+    # find an 'active' SteeringModule
+    smName = None
+    clients = odb['System']['Clients']
+    for k,v in clients.items():
+        if v['Name'].startswith('Steering'):
+            smName = v['Name']
+
+    if smName:
+        dictMerged['SM'] = SteeringModuleProvider(odb['Equipment'][smName]).getData()
 
     if 'EpicsFrontend' in odb['Equipment']:
         dictMerged['DT'] = CryoEpicsProvider(odb['Equipment']['EpicsFrontend']).getData()
