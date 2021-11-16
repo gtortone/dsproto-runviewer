@@ -71,6 +71,7 @@ class V1725BProvider:
         index = 0
         while timeWidth >= 1000:
             timeWidth = timeWidth / 1000
+            index += 1
 
         wfSetup['timeWidth'] = timeWidth
         wfSetup['timeUnit'] = timeUnits[index]
@@ -80,6 +81,7 @@ class V1725BProvider:
         index = 0
         while postTriggerWidth >= 1000:
             postTriggerWidth = postTriggerWidth / 1000
+            index += 1
 
         wfSetup['postTriggerWidth'] = postTriggerWidth
         wfSetup['postTriggerUnit'] = timeUnits[index]
