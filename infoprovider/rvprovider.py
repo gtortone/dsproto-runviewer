@@ -21,6 +21,8 @@ parser = argparse.ArgumentParser(description="DS Proto MIDAS RunViewer informati
 parser.add_argument('--setup', action='store', type=int, help='DS proto setup [1, 2]', choices=[1,2])
 parser.add_argument('--dump', action='store_true', help='dump json to screen without store it on database')
 parser.add_argument('--run', action='store', type=int, help='run number')
+parser.add_argument('--host', action='store', type=str, help='MIDAS hostname')
+parser.add_argument('--expt', action='store', type=str, help='MIDAS experiment name')
 parser.add_argument('--verbose', action='store_true', help='print additional info on screen')
 args = parser.parse_args()
 
@@ -84,7 +86,11 @@ if args.run:
 else:
     odbSource = 'ONLINE'
     print('I: fetch ODB from online')
-    mclient = midas.client.MidasClient("rvprovider")
+    try:
+        mclient = midas.client.MidasClient("rvprovider", host_name=args.host, expt_name=args.expt)
+    except Exception as e:
+        print(f'E: {e}')
+        sys.exit(-1)
     odb = mclient.odb_get('/')
     mclient.disconnect()
 

@@ -3,7 +3,9 @@ from providers.run import RunProvider
 from providers.shift import ShiftProvider
 from providers.logger import LoggerProvider
 from providers.sequencer import SequencerProvider
+from providers.steering import SteeringModuleProvider
 from providers.vx2740 import VX2740Provider
+from providers.cryoepics import CryoEpicsProvider
 
 def getSummary(odb):
 
@@ -21,6 +23,12 @@ def getSummary(odb):
 
     if 'Logger' in odb:
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
+
+    if 'SteeringModule' in odb['Equipment']:
+        dictMerged['SM'] = SteeringModuleProvider(odb['Equipment']['SteeringModule']).getData()
+
+    if 'EpicsFrontend' in odb['Equipment']:
+        dictMerged['DT'] = CryoEpicsProvider(odb['Equipment']['EpicsFrontend']).getData()
 
     if 'VX2740_Data_Group_000' in odb['Equipment']:
         dictMerged['BD'] = VX2740Provider(odb['Equipment']['VX2740_Config_Group_000'], odb['Equipment']['VX2740_Data_Group_000']).getData()
