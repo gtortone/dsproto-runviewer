@@ -53,7 +53,7 @@ const RunTabDT = (props) => {
                       {ch.name}
                     </TableCell>
                     <TableCell align="right">
-                      {ch.value} {"K"}
+                      {ch.value} {ch.unit}
                     </TableCell>
                   </TableRow>
                 ))}
