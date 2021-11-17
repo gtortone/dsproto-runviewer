@@ -6,6 +6,7 @@ class VX2740Provider:
         self.odbConf = odbConf
         self.odbData= odbData
 
+        self.data['type'] = 'VX2740'
         self.data['description'] = 'VX2740 boards'
         self.data['eventsSent'] = int(odbData['Statistics']['Events sent'])
         moduleList = []

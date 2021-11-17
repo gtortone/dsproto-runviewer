@@ -5,6 +5,7 @@ class V1725BProvider:
         self.data = {}
         self.odb = odb
 
+        self.data['type'] = 'V1725B'
         self.data['description'] = 'V1725B boards'
         self.data['eventsSent'] = int(odb['Statistics']['Events sent'])
         moduleList = []
