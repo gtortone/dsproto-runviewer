@@ -119,22 +119,32 @@ class VX2740Provider:
         if self.odbConf['Readback'][bstr]['Trigger on test pulse']:
             signalsList.append('test pulse')
 
-
+        groupList = []
         if self.odbConf['Readback'][bstr]['Trigger on ch over thresh A'] or \
             self.odbConf['Readback'][bstr]['Trigger on ch over thresh A&&B']:
-            triggerSource['A'] = self.getTriggerChannels(bstr, 'A')
+            groupItem = {}
+            groupItem['name'] = 'A'
+            groupItem['multiplicity'] = int(self.odbConf['Readback'][bstr]['Ch over thresh A multiplicity'], 16)
+            groupItem['channels'] = self.getTriggerChannels(bstr, 'A')
+            groupList.append(groupItem)
 
         if self.odbConf['Readback'][bstr]['Trigger on ch over thresh B'] or \
             self.odbConf['Readback'][bstr]['Trigger on ch over thresh A&&B']:
-            triggerSource['B'] = self.getTriggerChannels(bstr, 'B')
+            groupItem = {}
+            groupItem['name'] = 'B'
+            groupItem['multiplicity'] = int(self.odbConf['Readback'][bstr]['Ch over thresh B multiplicity'], 16)
+            groupItem['channels'] = self.getTriggerChannels(bstr, 'B')
+            groupList.append(groupItem)
 
         if len(signalsList) > 0:
             triggerSource['signals'] = signalsList
 
+        if len(groupList) > 0:
+            triggerSource['groups'] = groupList
+
         return triggerSource
 
     def getTriggerChannels(self, bstr, group):
-        data = {}
         channelList = []
         mask1 = int(self.odbConf['Readback'][bstr][f'Ch over thresh {group} en mask(31-0)'], 16)
         mask2 = int(self.odbConf['Readback'][bstr][f'Ch over thresh {group} en mask(63-32)'], 16)
@@ -151,10 +161,7 @@ class VX2740Provider:
                 channelList.append(channelItem)
                 channel += 1
 
-        data['multiplicity'] = int(self.odbConf['Readback'][bstr]['Ch over thresh A multiplicity'], 16)
-        data['channels'] = channelList
-
-        return data
+        return channelList
 
     def getTriggerOutput(self, bstr):
         triggerOutput = {}
