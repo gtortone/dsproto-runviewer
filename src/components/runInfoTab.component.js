@@ -47,9 +47,7 @@ const RunInfoTab = (props) => {
         <Tab value={0} label="Info" />
         {props.currentRun.start.HV && <Tab value={1} label="High Voltage" />}
         {props.currentRun.start.SM && <Tab value={2} label="Steering Module" />}
-        {/* temporary patch waiting for setup-2 */}
-        {props.setup === 1 && props.currentRun.start.BD && <Tab value={3} label="Digitizers" />}
-        {/* temporary patch waiting for setup-2 */}
+        {props.currentRun.start.BD && <Tab value={3} label="Digitizers" />}
         {props.currentRun.start.DT && <Tab value={4} label="Dewar" />}
       </Tabs>
       <TabPanel value={value} index={0}>
