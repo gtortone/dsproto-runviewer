@@ -4,7 +4,12 @@ import RunDataService from "../services/run.service";
 import { makeStyles } from "@material-ui/core";
 
 import Box from "@mui/material/Box";
-import { DataGrid, GridToolbarContainer, GridToolbarFilterButton, GridToolbarExport} from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarExport,
+} from "@mui/x-data-grid";
 import Link from "@mui/material/Link";
 import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
@@ -27,7 +32,11 @@ const useStyles = makeStyles((theme) => ({
 
 const RunList = (props) => {
   const [runset, setRunset] = useState([]);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(() => {
+    const saved = localStorage.getItem("pageSize");
+    const initialValue = JSON.parse(saved);
+    return initialValue || 15;
+  });
   const classes = useStyles();
 
   let columns = [
@@ -55,26 +64,39 @@ const RunList = (props) => {
     },
     { field: "shifter", headerName: "shifter", width: 150 },
     { field: "runType", headerName: "run type", width: 250 },
-    { field: "startTime", headerName: "start time", width: 200, filterable: false },
-    { field: "duration", headerName: "duration", width: 120, filterable: false},
+    {
+      field: "startTime",
+      headerName: "start time",
+      width: 200,
+      filterable: false,
+    },
+    {
+      field: "duration",
+      headerName: "duration",
+      width: 120,
+      filterable: false,
+    },
     {
       field: "writeData",
       headerName: "on disk",
       width: 120,
       renderCell: (params) => {
-        let icon = ''
-        let color = ''
+        let icon = "";
+        let color = "";
         if (params.value) {
-          icon = 'check_circle'
-          color = 'success'
+          icon = "check_circle";
+          color = "success";
+        } else {
+          color = "action";
+          icon = "cancel";
         }
-        else {
-          color = 'action'
-          icon = 'cancel'
-        }
-        return <Icon color={color} sx={{outlined: true}}>{icon}</Icon>;
+        return (
+          <Icon color={color} sx={{ outlined: true }}>
+            {icon}
+          </Icon>
+        );
       },
-      filterable: false
+      filterable: false,
     },
     {
       field: "loopCounter",
@@ -86,7 +108,7 @@ const RunList = (props) => {
           label = `${params.value}/${params.row["loopLimit"]}`;
         return <div>{label}</div>;
       },
-      filterable: false
+      filterable: false,
     },
     { field: "loopLimit", hide: true, filterable: false },
     {
@@ -99,12 +121,16 @@ const RunList = (props) => {
         if (params.value === "in progress") chipColor = "warning";
         else if (params.value === "finished") chipColor = "success";
         else if (params.value === "aborted") chipColor = "error";
-
         return <Chip size="small" label={params.value} color={chipColor} />;
       },
-      filterable: false
+      filterable: false,
     },
-    { field: "eventsSent", headerName: "events", width: 150, filterable: false },
+    {
+      field: "eventsSent",
+      headerName: "events",
+      width: 150,
+      filterable: false,
+    },
   ];
 
   const retrieveRunset = (setup) => {
@@ -128,7 +154,12 @@ const RunList = (props) => {
         <GridToolbarExport />
       </GridToolbarContainer>
     );
-  }
+  };
+
+  const changePageSize = (newPageSize) => {
+    setPageSize(newPageSize);
+    localStorage.setItem("pageSize", newPageSize);
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -136,23 +167,23 @@ const RunList = (props) => {
         key={random()}
         mt={1}
         sx={{
-          width: 4/5,
+          width: 4 / 5,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          alignSelf: "center"
+          alignSelf: "center",
         }}
       >
         <DataGrid
-        sx = {{
-          width: 5/5,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center"
-        }}
-        components={{
-          Toolbar: CustomToolbar,
-        }}
+          sx={{
+            width: 5 / 5,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+          components={{
+            Toolbar: CustomToolbar,
+          }}
           className={classes.root}
           autoHeight
           rowHeight={32}
@@ -164,7 +195,7 @@ const RunList = (props) => {
           disableColumnMenu
           disableSelectionOnClick
           onPageSizeChange={(newPageSize) => {
-            setPageSize(newPageSize);
+            changePageSize(newPageSize);
           }}
         />
       </Box>
