@@ -51,7 +51,7 @@ const RunTabSM = (props) => {
                       {ch.number}
                     </TableCell>
                     <TableCell align="right">
-                      {renderLineStatus(ch.highVoltage)}
+                      {renderLineStatus(ch.lowVoltage)}
                     </TableCell>
                     <TableCell align="right">
                       {renderLineStatus(ch.highVoltage)}
