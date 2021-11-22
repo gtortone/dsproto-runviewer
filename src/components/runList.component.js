@@ -9,7 +9,9 @@ import {
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarExport,
+  useGridSlotComponentProps,
 } from "@mui/x-data-grid";
+import TablePagination from "@mui/material/TablePagination";
 import Link from "@mui/material/Link";
 import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
@@ -30,12 +32,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const useStyles2 = makeStyles({
+  menuItem: {
+    margin: 2,
+    padding: 2
+  }
+});
+
 const RunList = (props) => {
   const [runset, setRunset] = useState([]);
   const [pageSize, setPageSize] = useState(() => {
     const saved = localStorage.getItem("pageSize");
     const initialValue = JSON.parse(saved);
     return initialValue || 15;
+  });
+  const [sortModel, setSortModel] = useState(() => {
+    const saved = localStorage.getItem("sortModel");
+    const initialValue = JSON.parse(saved);
+    return (
+      initialValue || [
+        {
+          field: "runNumber",
+          sort: "desc",
+        },
+      ]
+    );
+  });
+  const [page, setPage] = useState(() => {
+    const saved = localStorage.getItem("page");
+    const initialValue = JSON.parse(saved);
+    return initialValue || { setup: props.setup, number: 0 };
   });
   const classes = useStyles();
 
@@ -145,6 +171,12 @@ const RunList = (props) => {
 
   useEffect(() => {
     retrieveRunset(props.setup);
+    const savedPage = JSON.parse(localStorage.getItem("page"));
+    if (savedPage && savedPage.setup !== props.setup) {
+      const p = { setup: props.setup, number: 0 };
+      setPage(p);
+      localStorage.setItem("page", JSON.stringify(p));
+    }
   }, [props.setup]);
 
   const CustomToolbar = () => {
@@ -156,9 +188,47 @@ const RunList = (props) => {
     );
   };
 
-  const changePageSize = (newPageSize) => {
-    setPageSize(newPageSize);
-    localStorage.setItem("pageSize", newPageSize);
+  const CustomPagination = () => {
+    const { state, apiRef, options } = useGridSlotComponentProps();
+    const classes = useStyles2();
+    if (state.pagination.rowCount === 0) {
+      return <div></div>;
+    }
+    return (
+      <TablePagination
+        classes={{ menuItem: classes.menuItem }}
+        component="div"
+        count={state.pagination.rowCount}
+        page={options.page}
+        onPageChange={(event, value) => changePage(apiRef, value)}
+        rowsPerPage={pageSize}
+        rowsPerPageOptions={[10, 15, 20]}
+        showFirstButton
+        showLastButton
+        onRowsPerPageChange={(event) => {
+          changePageSize(event);
+        }}
+      />
+    );
+  };
+
+  const changePageSize = (event) => {
+    setPageSize(event.target.value);
+    localStorage.setItem("pageSize", event.target.value);
+  };
+
+  const changeOrder = (newModel) => {
+    if (JSON.stringify(sortModel[0]) !== JSON.stringify(newModel[0])) {
+      setSortModel(newModel);
+      localStorage.setItem("sortModel", JSON.stringify(newModel));
+    }
+  };
+
+  const changePage = (apiRef, newPage) => {
+    const p = { setup: props.setup, number: newPage };
+    apiRef.current.setPage(newPage);
+    setPage(p);
+    localStorage.setItem("page", JSON.stringify(p));
   };
 
   return (
@@ -183,20 +253,20 @@ const RunList = (props) => {
           }}
           components={{
             Toolbar: CustomToolbar,
+            Pagination: CustomPagination,
           }}
           className={classes.root}
+          page={page.number}
           autoHeight
           rowHeight={32}
           rows={runset}
           columns={columns}
-          pageSize={pageSize}
-          rowsPerPageOptions={[10, 15, 20]}
           pagination
           disableColumnMenu
           disableSelectionOnClick
-          onPageSizeChange={(newPageSize) => {
-            changePageSize(newPageSize);
-          }}
+          pageSize={pageSize}
+          sortModel={sortModel}
+          onSortModelChange={(model) => changeOrder(model)}
         />
       </Box>
     </Box>
