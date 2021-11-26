@@ -15,7 +15,8 @@ import TablePagination from "@mui/material/TablePagination";
 import Link from "@mui/material/Link";
 import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
-import { random } from "mathjs";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,33 +36,44 @@ const useStyles = makeStyles((theme) => ({
 const useStyles2 = makeStyles({
   menuItem: {
     margin: 2,
-    padding: 2
-  }
+    padding: 2,
+  },
 });
 
 const RunList = (props) => {
   const [runset, setRunset] = useState([]);
+  // pageSize state
+  const defaultPageSize = 15;
   const [pageSize, setPageSize] = useState(() => {
     const saved = localStorage.getItem("pageSize");
     const initialValue = JSON.parse(saved);
-    return initialValue || 15;
+    return initialValue || defaultPageSize;
   });
+  // sortModel state
+  const defaultSortModel = [
+    {
+      field: "runNumber",
+      sort: "desc",
+    },
+  ];
   const [sortModel, setSortModel] = useState(() => {
     const saved = localStorage.getItem("sortModel");
     const initialValue = JSON.parse(saved);
-    return (
-      initialValue || [
-        {
-          field: "runNumber",
-          sort: "desc",
-        },
-      ]
-    );
+    return initialValue || defaultSortModel;
   });
+  // page state
+  const defaultPage = { setup: props.setup, number: 0 };
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem("page");
     const initialValue = JSON.parse(saved);
-    return initialValue || { setup: props.setup, number: 0 };
+    return initialValue || defaultPage;
+  });
+  // filter state
+  const defaultFilter = { items: [] };
+  const [filter, setFilter] = useState(() => {
+    const saved = localStorage.getItem("filter");
+    const initialValue = JSON.parse(saved);
+    return initialValue || defaultFilter;
   });
   const classes = useStyles();
 
@@ -89,7 +101,7 @@ const RunList = (props) => {
       },
     },
     { field: "shifter", headerName: "shifter", width: 150 },
-    { field: "runType", headerName: "run type", width: 250 },
+    { field: "runType", headerName: "run type", width: 200 },
     {
       field: "startTime",
       headerName: "start time",
@@ -99,6 +111,7 @@ const RunList = (props) => {
     {
       field: "duration",
       headerName: "duration",
+      align: "right",
       width: 120,
       filterable: false,
     },
@@ -106,6 +119,7 @@ const RunList = (props) => {
       field: "writeData",
       headerName: "on disk",
       width: 120,
+      align: "center",
       renderCell: (params) => {
         let icon = "";
         let color = "";
@@ -127,7 +141,7 @@ const RunList = (props) => {
     {
       field: "loopCounter",
       headerName: "seq",
-      width: 120,
+      width: 80,
       renderCell: (params) => {
         let label = "-";
         if (params.value !== undefined)
@@ -140,7 +154,7 @@ const RunList = (props) => {
     {
       field: "status",
       headerName: "status",
-      width: 150,
+      width: 120,
       renderCell: (params) => {
         // params: GridRowParams
         let chipColor = "";
@@ -152,9 +166,16 @@ const RunList = (props) => {
       filterable: false,
     },
     {
+      field: "channelsNum",
+      headerName: "channels",
+      type: "number",
+      width: 120,
+    },
+    {
       field: "eventsSent",
       headerName: "events",
-      width: 150,
+      align: "right",
+      width: 120,
       filterable: false,
     },
   ];
@@ -184,6 +205,14 @@ const RunList = (props) => {
       <GridToolbarContainer>
         <GridToolbarFilterButton />
         <GridToolbarExport />
+        <Button sx={{ m: 0, p: 0 }}>
+          <Icon sx={{ fontSize: "20px", outlined: true, mr: 0.25 }}>
+            refresh
+          </Icon>
+          <Typography sx={{ ml: 0.5, p: 0, fontSize: 13 }} onClick={resetView}>
+            Reset view
+          </Typography>
+        </Button>
       </GridToolbarContainer>
     );
   };
@@ -212,9 +241,19 @@ const RunList = (props) => {
     );
   };
 
+  const resetView = () => {
+    setPage(defaultPage);
+    setFilter(defaultFilter);
+    setSortModel(defaultSortModel);
+    localStorage.setItem("page", JSON.stringify(defaultPage));
+    localStorage.setItem("filter", JSON.stringify(defaultFilter));
+    localStorage.setItem("sortModel", JSON.stringify(defaultSortModel));
+  };
+
   const changePageSize = (event) => {
     setPageSize(event.target.value);
     localStorage.setItem("pageSize", event.target.value);
+    setPage(0);
   };
 
   const changeOrder = (newModel) => {
@@ -226,15 +265,18 @@ const RunList = (props) => {
 
   const changePage = (apiRef, newPage) => {
     const p = { setup: props.setup, number: newPage };
-    apiRef.current.setPage(newPage);
     setPage(p);
     localStorage.setItem("page", JSON.stringify(p));
+  };
+
+  const changeFilter = (filter) => {
+    setFilter(filter);
+    localStorage.setItem("filter", JSON.stringify(filter));
   };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Box
-        key={random()}
         mt={1}
         sx={{
           width: 4 / 5,
@@ -266,6 +308,8 @@ const RunList = (props) => {
           disableSelectionOnClick
           pageSize={pageSize}
           sortModel={sortModel}
+          filterModel={filter}
+          onFilterModelChange={(filter) => changeFilter(filter)}
           onSortModelChange={(model) => changeOrder(model)}
         />
       </Box>

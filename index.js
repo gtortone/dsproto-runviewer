@@ -18,6 +18,15 @@ app.use(express.json());
 
 const runapp = express.Router();
 
+// get total number of channels 
+const getChannelsNum = (bd) => {
+  let num = 0
+  bd.modules.map((mod) => {
+    num += mod.channels.length
+  });
+  return num
+} 
+
 // Route to get all runs summary from a setup
 runapp.get("/api/:setup/summary", (req, res) => {
   const setup = parseInt(req.params.setup);
@@ -32,6 +41,7 @@ runapp.get("/api/:setup/summary", (req, res) => {
       let summary = [];
       let status = "";
       let eventsSent = "-";
+      let channelsNum = 0;
       result.map((obj, index) => {
         let doc = {};
         if (obj["jsonstop"] === null) {
@@ -44,10 +54,14 @@ runapp.get("/api/:setup/summary", (req, res) => {
           eventsSent = parseInt(doc["BD"]["eventsSent"]);
           status = "finished";
         }
+        // set total number of channels
+        let doc2 = JSON.parse(obj["jsonstart"]);
+        doc2["BD"] && (channelsNum = getChannelsNum(doc2["BD"]))
         let summaryItem = {
           id: index,
           status,
           eventsSent,
+          channelsNum,
           ...doc["RI"],
           ...doc["SQ"],
           ...doc["SI"],
