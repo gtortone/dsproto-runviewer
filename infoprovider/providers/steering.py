@@ -19,7 +19,11 @@ class SteeringModuleProvider:
             qmap['q3'] = {}
             qmap['q4'] = {}
             moduleItem['type'] =  'pduplus'
-            qmap['main'] = odb['Settings']['PDUPlus map']['Quadrants']
+            #qmap['main'] = odb['Settings']['PDUPlus map']['Quadrants']
+            qmap['q1']['main'] = odb['Settings']['PDUPlus map']['Quadrants'][0]
+            qmap['q2']['main'] = odb['Settings']['PDUPlus map']['Quadrants'][1]
+            qmap['q3']['main'] = odb['Settings']['PDUPlus map']['Quadrants'][2]
+            qmap['q4']['main'] = odb['Settings']['PDUPlus map']['Quadrants'][3]
             qmap['q1']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 1 tiles LV']
             qmap['q2']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 2 tiles LV']
             qmap['q3']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 3 tiles LV']
