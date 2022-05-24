@@ -182,6 +182,11 @@ const RunTabRI = (props) => {
               flexDirection: "column",
             }}
           >
+            {props.currentRun.info.runDescription &&
+              renderListItem(
+                "run description (sequencer)",
+                props.currentRun.info.runDescription
+              )}
             {renderListItem("shifter", props.currentRun.info.shifter)}
             {renderListItem("type", props.currentRun.info.runType)}
             {renderListItem("comment", props.currentRun.info.comment)}
