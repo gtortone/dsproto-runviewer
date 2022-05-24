@@ -20,6 +20,7 @@ load_dotenv()
 parser = argparse.ArgumentParser(description="DS Proto MIDAS RunViewer information provider")
 parser.add_argument('--setup', action='store', type=int, help='DS proto setup [1, 2]', choices=[1,2])
 parser.add_argument('--dump', action='store_true', help='dump json to screen without store it on database')
+parser.add_argument('--sync', action='store_true', help='synchronize with state transition')
 parser.add_argument('--run', action='store', type=int, help='run number')
 parser.add_argument('--host', action='store', type=str, help='MIDAS hostname')
 parser.add_argument('--expt', action='store', type=str, help='MIDAS experiment name')
@@ -91,6 +92,20 @@ else:
     except Exception as e:
         print(f'E: {e}')
         sys.exit(-1)
+
+    if args.sync:
+        # wait DAQ status is running/stopped... to prevent collection of stale informations
+        time.sleep(1)
+        nloop = 0
+        while True:
+            if mclient.odb_get('/System/Transition/status') == 1:
+                break
+            if nloop < 15:
+                time.sleep(1)
+            else:
+               printf(f'E: timeout waiting run state')
+               sys.exit(-1)
+
     odb = mclient.odb_get('/')
     mclient.disconnect()
 
