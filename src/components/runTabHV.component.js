@@ -22,8 +22,6 @@ const RunTabHV = (props) => {
       ? props.currentRun.stop.HV
       : undefined;
 
-  console.log(hvStop)
-
   const renderHVTable = (hv) => {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>

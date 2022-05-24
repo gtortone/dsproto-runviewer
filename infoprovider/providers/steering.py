@@ -13,22 +13,17 @@ class SteeringModuleProvider:
 
         if odb['Settings']['Use PDUPlus map']:
             # PDU plus map
-            qmap = {}
-            qmap['q1'] = {}
-            qmap['q2'] = {}
-            qmap['q3'] = {}
-            qmap['q4'] = {}
             moduleItem['type'] =  'pduplus'
-            qmap['main'] = odb['Settings']['PDUPlus map']['Quadrants']
-            qmap['q1']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 1 tiles LV']
-            qmap['q2']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 2 tiles LV']
-            qmap['q3']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 3 tiles LV']
-            qmap['q4']['lv'] = odb['Settings']['PDUPlus map']['Quadrant 4 tiles LV']
-            qmap['q1']['hv'] = odb['Settings']['PDUPlus map']['Quadrant 1 tiles HV']
-            qmap['q2']['hv'] = odb['Settings']['PDUPlus map']['Quadrant 2 tiles HV']
-            qmap['q3']['hv'] = odb['Settings']['PDUPlus map']['Quadrant 3 tiles HV']
-            qmap['q4']['hv'] = odb['Settings']['PDUPlus map']['Quadrant 4 tiles HV']
-            moduleItem['quadrants'] = qmap
+            qList = []
+            for q in range(0,4):
+                quadrantItem = {}
+                quadrantItem['number'] = q+1
+                quadrantItem['main'] = odb['Settings']['PDUPlus map']['Quadrants'][q]
+                quadrantItem['lowVoltage'] = odb['Settings']['PDUPlus map'][f'Quadrant {q+1} tiles LV']
+                quadrantItem['highVoltage'] = odb['Settings']['PDUPlus map'][f'Quadrant {q+1} tiles HV']
+                qList.append(quadrantItem)
+                
+            moduleItem['quadrants'] = qList
         else:
             # PDU original map
             moduleItem['type'] =  'pduoriginal'
