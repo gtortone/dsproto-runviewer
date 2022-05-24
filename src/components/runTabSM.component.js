@@ -28,7 +28,6 @@ const RunTabSM = (props) => {
   };
 
   const renderSMTable = (sm) => {
-    console.log(sm)
     if(sm['modules'][0].hasOwnProperty('channels')) {
        return (
          <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
@@ -67,7 +66,6 @@ const RunTabSM = (props) => {
          </Box>
        );
    } else if(sm['modules'][0].hasOwnProperty('quadrants')) {
-      console.log(sm)
       return(
          <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
             {sm.modules.map((mod) => (
