@@ -11,7 +11,7 @@ class SteeringModuleProvider:
         moduleItem['name'] = 'Steering Module'
         moduleItem['description'] = 'steering module'
 
-        if odb['Settings']['Use PDUPlus map']:
+        if odb['Settings'].get('Use PDUPlus map', False):
             # PDU plus map
             moduleItem['type'] =  'pduplus'
             qList = []
