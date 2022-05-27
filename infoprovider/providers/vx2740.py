@@ -1,4 +1,6 @@
 
+from providers.utils import toInt
+
 class VX2740Provider:
     
     def __init__(self, odbConf, odbData):
@@ -8,7 +10,7 @@ class VX2740Provider:
 
         self.data['type'] = 'VX2740'
         self.data['description'] = 'VX2740 boards'
-        self.data['eventsSent'] = int(odbData['Statistics']['Events sent'])
+        self.data['eventsSent'] = toInt(odbData['Statistics']['Events sent'])
         moduleList = []
         for board in range(0,16):
             bstr = f'Board{str(board).zfill(2)}'
@@ -34,7 +36,7 @@ class VX2740Provider:
                     channelItem['threshold'] = self.odbConf['Readback'][bstr]['Chan over thresh thresholds'][channel]
                     edge = self.odbConf['Readback'][bstr]['Chan over thresh rising edge'][channel]
                     channelItem['thresholdEdge'] = 'positive' if edge else 'negative' 
-                    channelItem['thresholdWidth'] = int(self.odbConf['Readback'][bstr]['Chan over thresh width (ns)'][channel])
+                    channelItem['thresholdWidth'] = toInt(self.odbConf['Readback'][bstr]['Chan over thresh width (ns)'][channel])
                     channelItem['dacOffset'] = self.odbConf['Readback'][bstr]['DC offset (pct)'][channel]
 
                     channelList.append(channelItem)
@@ -53,8 +55,8 @@ class VX2740Provider:
 
     def getReadoutChannels(self, bstr):
         channels = []
-        maskA = int(self.odbConf['Readback'][bstr]['Readout channel mask (31-0)'])
-        maskB = int(self.odbConf['Readback'][bstr]['Readout channel mask (63-32)'])
+        maskA = toInt(self.odbConf['Readback'][bstr]['Readout channel mask (31-0)'])
+        maskB = toInt(self.odbConf['Readback'][bstr]['Readout channel mask (63-32)'])
         for i in range(0,32):
             if (maskA & (1<<i)):
                 channels.append(i)
@@ -67,7 +69,7 @@ class VX2740Provider:
         wfSetup = {}
         timeUnits = [ 'ns', 'us', 'ms' ]
 
-        wfSetup['samplesNumber'] = int(self.odbConf['Readback'][bstr]['Waveform length (samples)'])
+        wfSetup['samplesNumber'] = toInt(self.odbConf['Readback'][bstr]['Waveform length (samples)'])
         timeWidth = wfSetup['samplesNumber'] * 8    # nanoseconds
         index = 0
         while timeWidth >= 1000:
@@ -77,7 +79,7 @@ class VX2740Provider:
         wfSetup['timeWidth'] = timeWidth
         wfSetup['timeUnit'] = timeUnits[index]
 
-        wfSetup['preTriggerSamples'] = int(self.odbConf['Readback'][bstr]['Pre-trigger (samples)'])
+        wfSetup['preTriggerSamples'] = toInt(self.odbConf['Readback'][bstr]['Pre-trigger (samples)'])
         preTriggerWidth = wfSetup['preTriggerSamples'] * 8    # nanoseconds
         index = 0
         while preTriggerWidth >= 1000:
@@ -87,7 +89,7 @@ class VX2740Provider:
         wfSetup['preTriggerWidth'] = preTriggerWidth
         wfSetup['preTriggerUnit'] = timeUnits[index]
 
-        wfSetup['triggerDelaySamples'] = int(self.odbConf['Readback'][bstr]['Trigger delay (samples)'])
+        wfSetup['triggerDelaySamples'] = toInt(self.odbConf['Readback'][bstr]['Trigger delay (samples)'])
         triggerDelayWidth = wfSetup['triggerDelaySamples'] * 8  # nanoseconds
         index = 0
         while triggerDelayWidth >= 1000:
@@ -124,7 +126,7 @@ class VX2740Provider:
             self.odbConf['Readback'][bstr]['Trigger on ch over thresh A&&B']:
             groupItem = {}
             groupItem['name'] = 'A'
-            groupItem['multiplicity'] = int(self.odbConf['Readback'][bstr]['Ch over thresh A multiplicity'])
+            groupItem['multiplicity'] = toInt(self.odbConf['Readback'][bstr]['Ch over thresh A multiplicity'])
             groupItem['channels'] = self.getTriggerChannels(bstr, 'A')
             groupList.append(groupItem)
 
@@ -132,7 +134,7 @@ class VX2740Provider:
             self.odbConf['Readback'][bstr]['Trigger on ch over thresh A&&B']:
             groupItem = {}
             groupItem['name'] = 'B'
-            groupItem['multiplicity'] = int(self.odbConf['Readback'][bstr]['Ch over thresh B multiplicity'])
+            groupItem['multiplicity'] = toInt(self.odbConf['Readback'][bstr]['Ch over thresh B multiplicity'])
             groupItem['channels'] = self.getTriggerChannels(bstr, 'B')
             groupList.append(groupItem)
 
@@ -146,8 +148,8 @@ class VX2740Provider:
 
     def getTriggerChannels(self, bstr, group):
         channelList = []
-        mask1 = int(self.odbConf['Readback'][bstr][f'Ch over thresh {group} en mask(31-0)'])
-        mask2 = int(self.odbConf['Readback'][bstr][f'Ch over thresh {group} en mask(63-32)'])
+        mask1 = toInt(self.odbConf['Readback'][bstr][f'Ch over thresh {group} en mask(31-0)'])
+        mask2 = toInt(self.odbConf['Readback'][bstr][f'Ch over thresh {group} en mask(63-32)'])
         mask = (mask2 << 32) + mask1
                 
         for channel in range(0,64):
