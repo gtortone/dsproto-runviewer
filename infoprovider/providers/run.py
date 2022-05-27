@@ -8,8 +8,8 @@ class RunProvider:
 
         self.data['runNumber'] = odb['Run number']
         self.data['startTime'] = odb['Start time']
-        self.data['startTimestamp'] = int(odb['Start time binary'], 16)
-        stopTimestamp = int(odb['Stop time binary'], 16)
+        self.data['startTimestamp'] = int(odb['Start time binary'])
+        stopTimestamp = int(odb['Stop time binary'])
         if stopTimestamp != 0:
             self.data['stopTime'] = odb['Stop time']
             self.data['stopTimestamp'] = stopTimestamp
