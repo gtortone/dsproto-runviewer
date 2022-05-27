@@ -1,5 +1,6 @@
 
 import datetime
+from providers.utils import toInt
 
 class RunProvider:
     
@@ -8,8 +9,8 @@ class RunProvider:
 
         self.data['runNumber'] = odb['Run number']
         self.data['startTime'] = odb['Start time']
-        self.data['startTimestamp'] = int(odb['Start time binary'])
-        stopTimestamp = int(odb['Stop time binary'])
+        self.data['startTimestamp'] = toInt(odb['Start time binary'])
+        stopTimestamp = toInt(odb['Stop time binary'])
         if stopTimestamp != 0:
             self.data['stopTime'] = odb['Stop time']
             self.data['stopTimestamp'] = stopTimestamp
