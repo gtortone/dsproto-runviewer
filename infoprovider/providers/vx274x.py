@@ -1,15 +1,14 @@
 
 from providers.utils import toInt
 
-class VX2740Provider:
+class VX274xProvider:
     
     def __init__(self, odbConf, odbData):
         self.data = {}
         self.odbConf = odbConf
-        self.odbData= odbData
+        self.odbData = odbData
 
-        self.data['type'] = 'VX2740'
-        self.data['description'] = 'VX2740 boards'
+        self.data['description'] = 'VX274x boards'
         self.data['eventsSent'] = toInt(odbData['Statistics']['Events sent'])
         moduleList = []
         for board in range(0,16):
@@ -20,13 +19,23 @@ class VX2740Provider:
                     if bool(odbConf['Settings'][bstr]['Enable']) is False:
                         continue
 
+                self.model = odbConf['Readback'][bstr]['Model name']
+
                 moduleItem = {}
-                moduleItem['name'] = f'VX2740 board {board}'
+                moduleItem['type'] = self.model
+                moduleItem['name'] = f'{self.model} board {board}'
                 moduleItem['hostname'] = odbConf['Settings'][bstr]['Hostname (restart on change)']
                 moduleItem['fwVersion'] = odbConf['Readback'][bstr]['Firmware version']
                 moduleItem['useExtClock'] = odbConf['Readback'][bstr]['Use external clock']
                 moduleItem['enableDAC'] = odbConf['Readback'][bstr]['Enable DC offsets']
                 moduleItem['useRelativeTrigThreshold'] = odbConf['Readback'][bstr]['Use relative trig thresholds']
+
+                gain = []
+                if self.model == 'VX2745':
+                    for i in range(0,4):
+                        gain.append(odbConf['Readback'][bstr]['VGA gain'][i])
+
+                moduleItem['vgaGain'] = gain
 
                 channelList = []
                 channels = self.getReadoutChannels(bstr)
@@ -98,6 +107,9 @@ class VX2740Provider:
 
         wfSetup['triggerDelayWidth'] = triggerDelayWidth
         wfSetup['triggerDelayUnit'] = timeUnits[index]
+
+        if self.odbConf['Readback'][bstr]['Trigger on test pulse']:
+            wfSetup['testPulsePeriod'] = toInt(self.odbConf['Readback'][bstr]['Test pulse period (ms)'])
 
         return wfSetup
 

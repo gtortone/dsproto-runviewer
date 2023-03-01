@@ -10,3 +10,9 @@ def toInt(data):
     if data.startswith('0x'):
         return int(data, 16)
     else: return int(data)
+
+def isRunning(odb, fename):
+    for pid in odb['System']['Clients']:
+        if odb['System']['Clients'][str(pid)]['Name'] == fename:
+            return True
+    return False
