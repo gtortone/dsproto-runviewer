@@ -28,7 +28,7 @@ def getSummary(odb):
     if 'Logger' in odb:
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
 
-    if isRunning(odb, 'CAEN_HV'):
+    if isRunning(odb, 'CAENHV'):
         dictMerged['HV'] = HVProvider(odb['Equipment']['CAEN_HV'], slots=[4,6],
                         channels=[[0,1,2], [0]],
                         metrics = [['V0Set (V)', 'VMon (V)', 'I0Set (A)', 'IMon (A)', 'Status String'],
