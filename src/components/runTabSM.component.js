@@ -8,6 +8,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { v4 } from 'uuid'
 
 import RunBorSection from "./runBorSection.component";
 import RunEorSection from "./runEorSection.component";
@@ -32,7 +33,7 @@ const RunTabSM = (props) => {
        return (
          <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
            {sm.modules.map((mod) => (
-             <TableContainer sx={{ m: 1 }}>
+             <TableContainer sx={{ m: 1 }} key={v4()}>
                <Table sx={{ width: 4 / 5 }} size="small">
                  <TableHead>
                    <TableRow>
@@ -116,7 +117,7 @@ const RunTabSM = (props) => {
                                  {renderLineStatus(q.lowVoltage[3])}
                               </TableCell>
                               <TableCell align="center">
-                                 {renderLineStatus(q.highVoltage[0])}
+                                 {renderLineStatus(q.highVoltage[3])}
                               </TableCell>
                            </TableRow>
                         ))}

@@ -9,6 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import { v4 } from 'uuid'
 
 import RunBorSection from "./runBorSection.component";
 import RunEorSection from "./runEorSection.component";
@@ -36,7 +37,7 @@ const RunTabDT = (props) => {
           History Plot
         </Button>
         {dt.modules.map((mod) => (
-          <TableContainer sx={{ m: 1 }}>
+          <TableContainer sx={{ m: 1 }} key={v4()}>
             <Table sx={{ width: 4 / 5 }} size="small">
               <TableHead>
                 <TableRow>

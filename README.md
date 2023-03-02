@@ -35,6 +35,13 @@ To run frontend:
 npm run start:prod
 ```
 
+### Note
+
+Recent Node releases require this environment variable:
+```
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+
 ### Startup script with supervisord
 
 ```

@@ -10,6 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import { v4 } from 'uuid'
 
 import RunBorSection from "./runBorSection.component";
 import RunEorSection from "./runEorSection.component";
@@ -40,7 +41,7 @@ const RunTabHV = (props) => {
           History Plot
         </Button>
         {hv.modules.map((mod) => (
-          <TableContainer sx={{ m: 1 }}>
+          <TableContainer sx={{ m: 1 }} key={v4()}>
             <Typography variant="h6" fontWeight="bold" sx={{ m: 1 }}>
               {mod.name} - {mod.description}
             </Typography>

@@ -51,7 +51,11 @@ runapp.get("/api/:setup/summary", (req, res) => {
           else status = "aborted";
         } else {
           doc = JSON.parse(obj["jsonstop"]);
-          eventsSent = parseInt(doc["BD"]["eventsSent"]);
+          try {
+            eventsSent = parseInt(doc["BD"]["eventsSent"])
+          } catch {
+            eventsSent = "-";
+          }
           status = "finished";
         }
         // set total number of channels

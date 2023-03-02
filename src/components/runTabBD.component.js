@@ -15,6 +15,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import { v4 } from 'uuid'
 
 import RunBorSection from "./runBorSection.component";
 import RunEorSection from "./runEorSection.component";
@@ -28,7 +29,7 @@ const RunTabBD = (props) => {
 
   const renderListItem = (name, value) => {
     return (
-      <ListItem disablePadding>
+      <ListItem disablePadding key={v4()}>
         <ListItemText
           sx={{ width: 2 / 5, p: 1, mr: 1, bgcolor: "#eee", borderRadius: 1 }}
           primary={name}
@@ -66,7 +67,7 @@ const RunTabBD = (props) => {
         </List>
       );
     }
-    if (type === "VX2740") {
+    if (type.startsWith("VX274")) {
       return (
         <List
           dense
@@ -89,6 +90,7 @@ const RunTabBD = (props) => {
             "trigger delay window",
             wf.triggerDelayWidth + " " + wf.triggerDelayUnit
           )}
+          {wf.testPulsePeriod && renderListItem("test pulse period", wf.testPulsePeriod + " ms")}
         </List>
       );
     }
@@ -154,7 +156,7 @@ const RunTabBD = (props) => {
         );
       }
     }
-    if (type === "VX2740") {
+    if (type.startsWith("VX274")) {
       if (ts.signals) {
         content.push(
           <List
@@ -244,7 +246,7 @@ const RunTabBD = (props) => {
         );
       }
     }
-    if (type === "VX2740") {
+    if (type.startsWith("VX274")) {
       content.push(
         <List
           dense
@@ -305,7 +307,7 @@ const RunTabBD = (props) => {
       );
     }
 
-    if (type === "VX2740") {
+    if (type.startsWith("VX274")) {
       return (
         <TableContainer sx={{ m: 2 }}>
           <Table sx={{ width: 4 / 5 }} size="small">
@@ -354,7 +356,7 @@ const RunTabBD = (props) => {
   };
 
   const renderConfig = (type, mod) => {
-    if (type === "VX2740") {
+    if (type.startsWith("VX274")) {
       return (
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -378,6 +380,10 @@ const RunTabBD = (props) => {
                 "use relative trigger thresholds",
                 mod.useRelativeTrigThreshold.toString()
               )}
+              {mod.vgaGain && renderListItem("VGA gain [00...15]", mod.vgaGain[0] + " dB")}
+              {mod.vgaGain && renderListItem("VGA gain [16...31]", mod.vgaGain[1] + " dB")}
+              {mod.vgaGain && renderListItem("VGA gain [32...47]", mod.vgaGain[2] + " dB")}
+              {mod.vgaGain && renderListItem("VGA gain [48...63]", mod.vgaGain[3] + " dB")}
             </List>
           </AccordionDetails>
         </Accordion>
