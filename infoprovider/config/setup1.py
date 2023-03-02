@@ -25,7 +25,7 @@ def getSummary(odb):
     if 'Edit on Start' in odb['Experiment']:
         dictMerged['SI'] = ShiftProvider(odb['Experiment']['Edit on Start']).getData()
 
-    if isRunning(odb, 'Logger'):
+    if 'Logger' in odb:
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
 
     if isRunning(odb, 'CAEN_HV'):

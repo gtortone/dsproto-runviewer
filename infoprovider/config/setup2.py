@@ -24,7 +24,7 @@ def getSummary(odb):
     if 'Edit on Start' in odb['Experiment']:
         dictMerged['SI'] = ShiftProvider(odb['Experiment']['Edit on Start']).getData()
 
-    if isRunning(odb, 'Logger'):
+    if 'Logger' in odb:
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
 
     # find an 'active' SteeringModule
@@ -45,7 +45,7 @@ def getSummary(odb):
         if len(data['modules'][0]['channels']) > 0:
             dictMerged['DT'] = data
 
-    if isRunning(odb, 'VX2740_Data_Group_000'):
+    if isRunning(odb, 'VX2740_Group_00'):
         dictMerged['BD'] = VX274xProvider(odb['Equipment']['VX2740_Config_Group_000'], odb['Equipment']['VX2740_Data_Group_000']).getData()
 
     return dictMerged
