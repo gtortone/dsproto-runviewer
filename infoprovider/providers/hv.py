@@ -12,7 +12,7 @@ class HVProvider:
         slotIndex = 0
         for slot in self.slots:
             moduleItem = {}
-            if slot in odb['Status']:
+            if f'Slot {slot}' in odb['Status']:
                 moduleItem['name'] = odb['Status'][f'Slot {slot}']['Model']
                 moduleItem['description'] = odb['Status'][f'Slot {slot}']['Description']
 
