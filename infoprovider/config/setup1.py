@@ -48,7 +48,7 @@ def getSummary(odb):
         if len(data['modules'][0]['channels']) > 0:
             dictMerged['DT'] = data
 
-    if isRunning(odb, 'V1725_Data00'):
+    if isRunning(odb, 'feov1725MTI00'):
         dictMerged['BD'] = V1725BProvider(odb['Equipment']['V1725_Data00']).getData()
 
     return dictMerged
