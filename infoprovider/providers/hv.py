@@ -25,13 +25,13 @@ class HVProvider:
                         continue
                     if metric.lower().startswith('vmon') or metric.lower().startswith('imon'):
                         metricItem = {}
-                        metricItem['name'] = metric.lower().split()[0]
+                        metricItem['name'] = metric
                         metricItem['value'] = odb['Status'][slot][metric][channel]
                         metricItem['unit'] = metric[metric.find("(")+1:metric.find(")")]
                         metricList.append(metricItem)
                     elif metric.lower() == 'status string':
                         metricItem = {}
-                        metricItem['name'] = 'status'
+                        metricItem['name'] = metric
                         metricItem['value'] = odb['Status'][slot][metric][channel]
                         metricList.append(metricItem)
                 # settings info
@@ -40,7 +40,7 @@ class HVProvider:
                         continue
                     if metric.lower().startswith('i0') or metric.lower().startswith('v0'):
                         metricItem = {}
-                        metricItem['name'] = metric.lower().split()[0].replace('0','')
+                        metricItem['name'] = metric
                         metricItem['value'] = odb['Settings'][slot][metric][channel]
                         metricItem['unit'] = metric[metric.find("(")+1:metric.find(")")]
                         metricList.append(metricItem)
