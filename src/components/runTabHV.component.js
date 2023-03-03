@@ -16,6 +16,19 @@ import RunBorSection from "./runBorSection.component";
 import RunEorSection from "./runEorSection.component";
 import historyURL from "../utils/mhistory";
 
+function getMetricByName(name, data) {
+  var found = null;
+
+  for (var i = 0; i < data.length; i++) {
+    var element = data[i];
+
+    if (element.name.includes(name)) {
+      found = element;
+    }
+  }
+  return found;
+}
+
 const RunTabHV = (props) => {
   const hvStart = props.currentRun.start.HV;
   const hvStop =
@@ -72,14 +85,29 @@ const RunTabHV = (props) => {
                     <TableCell component="th" scope="row">
                       {ch.name}
                     </TableCell>
-                    {ch.metrics.map((m) => (
-                      <TableCell align="right">
-                        {typeof m.value == "number"
-                          ? parseFloat(m.value).toFixed(2)
-                          : m.value}{" "}
-                        {m.unit}
-                      </TableCell>
-                    ))}
+                    <TableCell align="right">
+                      {parseFloat(getMetricByName('V0', ch.metrics).value).toFixed(2)}
+                      {" "}
+                      {getMetricByName('V0', ch.metrics).unit}
+                    </TableCell>
+                    <TableCell align="right">
+                      {parseFloat(getMetricByName('VMon', ch.metrics).value).toFixed(2)}
+                      {" "}
+                      {getMetricByName('VMon', ch.metrics).unit}
+                    </TableCell>
+                    <TableCell align="right">
+                      {parseFloat(getMetricByName('I0', ch.metrics).value).toFixed(2)}
+                      {" "}
+                      {getMetricByName('I0', ch.metrics).unit}
+                    </TableCell>
+                    <TableCell align="right">
+                      {parseFloat(getMetricByName('IMon', ch.metrics).value).toFixed(2)}
+                      {" "}
+                      {getMetricByName('IMon', ch.metrics).unit}
+                    </TableCell>
+                    <TableCell align="right">
+                      {getMetricByName('Status', ch.metrics).value}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
