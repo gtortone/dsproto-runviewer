@@ -29,10 +29,7 @@ def getSummary(odb):
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
 
     if isRunning(odb, 'CAENHV'):
-        dictMerged['HV'] = HVProvider(odb['Equipment']['CAEN_HV'], slots=[1,5],
-                        channels=[[0,1,2,3,4,5,6,7], [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]],
-                        metrics = [['V0Set (V)', 'VMon (V)', 'I0Set (A)', 'IMon (A)', 'Status String'],
-                                   ['V0Set (V)', 'VMon (V)', 'I0Set (uA)', 'IMon (uA)', 'Status String']]).getData()
+        dictMerged['HV'] = HVProvider(odb['Equipment']['CAEN_HV']).getData()
 
     # find an 'active' SteeringModule
     smName = None

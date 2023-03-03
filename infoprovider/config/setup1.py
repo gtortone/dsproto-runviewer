@@ -29,10 +29,7 @@ def getSummary(odb):
         dictMerged['LI'] = LoggerProvider(odb['Logger']).getData()
 
     if isRunning(odb, 'CAENHV'):
-        dictMerged['HV'] = HVProvider(odb['Equipment']['CAEN_HV'], slots=[4,6],
-                        channels=[[0,1,2], [0]],
-                        metrics = [['V0Set (V)', 'VMon (V)', 'I0Set (A)', 'IMon (A)', 'Status String'],
-                                   ['V0Set (V)', 'VMon (V)', 'I0Set (uA)', 'IMon (uA)', 'Status String']]).getData()
+        dictMerged['HV'] = HVProvider(odb['Equipment']['CAEN_HV']).getData()
 
     if isRunning(odb, 'Lakeshore-336'):
         dictMerged['DT'] = LakeshoreProvider(odb['Equipment']['Lakeshore-336']).getData()
