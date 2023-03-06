@@ -31,12 +31,11 @@ class VX274xProvider:
                 moduleItem['enableDAC'] = odbConf['Readback'][bstr]['Enable DC offsets']
                 moduleItem['useRelativeTrigThreshold'] = odbConf['Readback'][bstr]['Use relative trig thresholds']
 
-                gain = []
                 if self.model == 'VX2745':
+                    gain = []
                     for i in range(0,4):
                         gain.append(odbConf['Readback'][bstr]['VGA gain'][i])
-
-                moduleItem['vgaGain'] = gain
+                    moduleItem['vgaGain'] = gain
 
                 channelList = []
                 channels = self.getReadoutChannels(bstr)
