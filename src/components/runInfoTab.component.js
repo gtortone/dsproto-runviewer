@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
 
 import RunTabRI from "./runTabRI.component";
 import RunTabHV from "./runTabHV.component";
@@ -40,6 +41,29 @@ const RunInfoTab = (props) => {
 
   return (
     <Box mt={1}>
+      <Box sx={{
+        width: 5 / 5,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}>
+        <Box
+          sx={{
+            width: 4 / 5,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            alignSelf: "center",
+            borderRadius: 1,
+            border: 2,
+            borderColor: "primary.main",
+            color: "primary.main",
+            p: 0.5,
+          }}
+        >
+          <Typography variant='body1'>run number: {props.currentRun.info.runNumber}</Typography>
+        </Box>
+      </Box>
       <Tabs
         value={value}
         onChange={handleChange}

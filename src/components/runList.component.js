@@ -41,7 +41,19 @@ const useStyles2 = makeStyles({
 });
 
 const RunList = (props) => {
-  const [runset, setRunset] = useState([]);
+  const [pageState, setPageState] = useState({
+    isLoading: false,
+    data: [],
+    total: 0,
+  })
+
+  // page state
+  const defaultPage = { setup: props.setup, number: 0 };
+  const [page, setPage] = useState(() => {
+    const saved = localStorage.getItem("page");
+    const initialValue = JSON.parse(saved);
+    return initialValue || defaultPage;
+  });
   // pageSize state
   const defaultPageSize = 15;
   const [pageSize, setPageSize] = useState(() => {
@@ -61,13 +73,6 @@ const RunList = (props) => {
     const initialValue = JSON.parse(saved);
     return initialValue || defaultSortModel;
   });
-  // page state
-  const defaultPage = { setup: props.setup, number: 0 };
-  const [page, setPage] = useState(() => {
-    const saved = localStorage.getItem("page");
-    const initialValue = JSON.parse(saved);
-    return initialValue || defaultPage;
-  });
   // filter state
   const defaultFilter = { items: [] };
   const [filter, setFilter] = useState(() => {
@@ -75,6 +80,7 @@ const RunList = (props) => {
     const initialValue = JSON.parse(saved);
     return initialValue || defaultFilter;
   });
+
   const classes = useStyles();
 
   let columns = [
@@ -87,10 +93,10 @@ const RunList = (props) => {
         const newTo = {
           pathname: process.env.REACT_APP_BASEURL + "/run",
           state: {
-            runSet: params.api.state.rows.idRowsLookup,
-            runCount: Object.keys(params.api.state.rows.idRowsLookup).length,
-            idnum: params.row.id,
             setup: props.setup,
+            run: params.value,
+            id: params.row.id,
+            count: pageState.total
           },
         };
         return (
@@ -181,9 +187,10 @@ const RunList = (props) => {
   ];
 
   const retrieveRunset = (setup) => {
+    setPageState(old => ({ ...old, isLoading: true }))
     RunDataService.getAll(setup)
       .then((response) => {
-        setRunset(response.data);
+        setPageState(old => ({ ...old, isLoading: false, data: response.data.data, total: response.data.total }))
       })
       .catch((e) => {
         console.log(e);
@@ -191,6 +198,7 @@ const RunList = (props) => {
   };
 
   useEffect(() => {
+    setPageState(old => ({ ...old, data: [] }))
     retrieveRunset(props.setup);
     const savedPage = JSON.parse(localStorage.getItem("page"));
     if (savedPage && savedPage.setup !== props.setup) {
@@ -274,6 +282,7 @@ const RunList = (props) => {
     localStorage.setItem("filter", JSON.stringify(filter));
   };
 
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Box
@@ -300,12 +309,13 @@ const RunList = (props) => {
           className={classes.root}
           page={page.number}
           autoHeight
-          rowHeight={32}
-          rows={runset}
+          rowHeight={48}
+          rows={pageState.data}
           columns={columns}
           pagination
           disableColumnMenu
           disableSelectionOnClick
+          loading={pageState.isLoading}
           pageSize={pageSize}
           sortModel={sortModel}
           filterModel={filter}

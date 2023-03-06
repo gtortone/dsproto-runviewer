@@ -1,10 +1,9 @@
-const e = require("express");
 const express = require("express");
-const mysql = require("mysql");
+const mysql = require("mysql2/promise");
 const path = require("path");
 require("dotenv").config();
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: process.env.DBHOST,
   user: process.env.DBUSER,
   password: process.env.DBPASS,
@@ -25,144 +24,225 @@ const getChannelsNum = (bd) => {
     num += mod.channels.length
   });
   return num
-} 
+}
 
-// Route to get all runs summary from a setup
-runapp.get("/api/:setup/summary", (req, res) => {
-  const setup = parseInt(req.params.setup);
-
-  db.query(
-    "SELECT * FROM params WHERE setup = ? ORDER BY run DESC",
-    setup,
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      let summary = [];
-      let status = "";
-      let eventsSent = "-";
-      let channelsNum = 0;
-      result.map((obj, index) => {
-        let doc = {};
-        if (obj["jsonstop"] === null) {
-          // run not finished yet or aborted
-          doc = JSON.parse(obj["jsonstart"]);
-          if (index === 0) status = "in progress";
-          else status = "aborted";
-        } else {
-          doc = JSON.parse(obj["jsonstop"]);
-          try {
-            eventsSent = parseInt(doc["BD"]["eventsSent"])
-          } catch {
-            eventsSent = "-";
-          }
-          status = "finished";
-        }
-        // set total number of channels
-        let doc2 = JSON.parse(obj["jsonstart"]);
-        doc2["BD"] && (channelsNum = getChannelsNum(doc2["BD"]))
-        let summaryItem = {
-          id: index,
-          status,
-          eventsSent,
-          channelsNum,
-          ...doc["RI"],
-          ...doc["SQ"],
-          ...doc["SI"],
-          ...doc["LI"],
-        };
-        summary.push(summaryItem);
-      });
-
-      res.send(summary);
-    }
-  );
-});
-
-// Route to get one run from a setup
-runapp.get("/api/:setup/:run", (req, res) => {
-  const run = req.params.run;
-  const setup = req.params.setup;
-  let lastRunNumber = undefined;
-
-  // get last run number for this setup
-  db.query(
+const getLastRunNumber = async (setup) => {
+  result = await db.query(
     "SELECT * FROM params WHERE setup = ? ORDER BY run DESC LIMIT 1",
     [setup],
     (err, result) => {
       if (err) {
         console.log(err);
       }
-      lastRunNumber = result[0].run;
-    }
-  );
+    })
+  return (result[0][0].run)
+}
 
-  // get run by setup and run number
-  db.query(
-    "SELECT * FROM params WHERE setup = ? AND run = ?",
-    [setup, run],
-    (err, result) => {
-      if (err) {
-        console.log(err);
+const buildSummary = (result, startId, length) => {
+  let summary = [];
+  let status = "";
+  let eventsSent = "-";
+  let channelsNum = 0;
+
+  result.map((obj, index) => {
+    let doc = {};
+    if (obj["jsonstop"] === null) {
+      // run not finished yet or aborted
+      doc = JSON.parse(obj["jsonstart"]);
+      if (index === 0) status = "in progress";
+      else status = "aborted";
+    } else {
+      doc = JSON.parse(obj["jsonstop"]);
+      try {
+        eventsSent = parseInt(doc["BD"]["eventsSent"])
+      } catch {
+        eventsSent = "-";
       }
-      let runItem = [];
-      let runDoc = {};
-      let runStatus = undefined;
-      if (result.length === 0) res.send(runItem);
-      else {
-        let runStart = JSON.parse(result[0]["jsonstart"]);
-        let runStop = JSON.parse(result[0]["jsonstop"]);
-        let runInfo = {};
-
-        if (runStop != null) {
-          runStatus = "finished";
-        } else {
-          if (runStart.RI.runNumber === lastRunNumber) {
-            runStatus = "in progress";
-          } else runStatus = "aborted";
-        }
-
-        // for finished run use runStop info
-        if (runStatus === "finished") {
-          runInfo = {
-            ...runStop["RI"],
-            ...runStop["SQ"],
-            ...runStop["SI"],
-            ...runStop["LI"],
-            status: runStatus,
-          };
-          delete runStart["RI"];
-          delete runStart["SQ"];
-          delete runStart["SI"];
-          delete runStart["LI"];
-          delete runStop["RI"];
-          delete runStop["SQ"];
-          delete runStop["SI"];
-          delete runStop["LI"];
-        } else {
-          // for in-progress or aborted run use runStart info
-          runInfo = {
-            ...runStart["RI"],
-            ...runStart["SQ"],
-            ...runStart["SI"],
-            ...runStart["LI"],
-            status: runStatus,
-          };
-          delete runStart["RI"];
-          delete runStart["SQ"];
-          delete runStart["SI"];
-          delete runStart["LI"];
-        }
-
-        // compose response
-        runDoc["info"] = runInfo;
-        runDoc["start"] = runStart;
-        runDoc["stop"] = runStop;
-        runItem.push(runDoc);
-        res.send(runItem);
-      }
+      status = "finished";
     }
-  );
+    // set total number of channels
+    let doc2 = JSON.parse(obj["jsonstart"]);
+    doc2["BD"] && (channelsNum = getChannelsNum(doc2["BD"]))
+    let summaryItem = {
+      id: length - (index + startId) - 1,
+      status,
+      eventsSent,
+      channelsNum,
+    };
+
+    doc.RI && (summaryItem.runNumber = doc.RI.runNumber)
+    doc.RI && (summaryItem.startTime = doc.RI.startTime)
+    doc.RI && (summaryItem.stopTime = doc.RI.stopTime)
+    doc.RI && (summaryItem.duration = doc.RI.duration)
+    doc.LI && (summaryItem.writeData = doc.LI.writeData)
+    doc.SI && (summaryItem.shifter = doc.SI.shifter);
+    doc.SI && (summaryItem.runType = doc.SI.runType);
+    doc.SQ && (summaryItem.loopCounter = doc.SQ.loopCounter);
+    doc.SQ && (summaryItem.loopLimit = doc.SQ.loopLimit);
+
+    summary.push(summaryItem);
+  });
+  return summary
+}
+
+const buildRun = async (result) => {
+
+  let runItem = [];
+  let runDoc = {};
+  let runStatus = undefined;
+  let runStart = JSON.parse(result["jsonstart"]);
+  let runStop = JSON.parse(result["jsonstop"]);
+  let runInfo = {};
+
+  lastRunNumber = await getLastRunNumber(result.setup);
+
+  if (runStop != null) {
+    runStatus = "finished";
+  } else {
+    if (runStart.RI.runNumber === lastRunNumber) {
+      runStatus = "in progress";
+    } else runStatus = "aborted";
+  }
+
+  // for finished run use runStop info
+  if (runStatus === "finished") {
+    runInfo = {
+      ...runStop["RI"],
+      ...runStop["SQ"],
+      ...runStop["SI"],
+      ...runStop["LI"],
+      status: runStatus,
+    };
+    delete runStart["RI"];
+    delete runStart["SQ"];
+    delete runStart["SI"];
+    delete runStart["LI"];
+    delete runStop["RI"];
+    delete runStop["SQ"];
+    delete runStop["SI"];
+    delete runStop["LI"];
+  } else {
+    // for in-progress or aborted run use runStart info
+    runInfo = {
+      ...runStart["RI"],
+      ...runStart["SQ"],
+      ...runStart["SI"],
+      ...runStart["LI"],
+      status: runStatus,
+    };
+    delete runStart["RI"];
+    delete runStart["SQ"];
+    delete runStart["SI"];
+    delete runStart["LI"];
+  }
+
+  // compose response
+  runDoc["info"] = runInfo;
+  runDoc["start"] = runStart;
+  runDoc["stop"] = runStop;
+  runItem.push(runDoc);
+
+  return (runItem)
+}
+
+// Route to get runs summary from a setup with (optional) page and limit
+// example: /api/2/summary    (get runs summary of setup 2)
+runapp.get("/api/:setup/summary", (req, res) => {
+  const setup = parseInt(req.params.setup);
+
+  if (isNaN(setup)) {
+    res.send([]);
+  } else {
+    let { page, limit } = req.query;
+    let queryType = 'paged'       // queryType : paged || bulk
+
+    if ((!page) && (!limit))
+      queryType = 'bulk'
+    else {
+      if (!page) page = 1;
+      if (!limit) limit = 15;
+    }
+
+    db.query(
+      "SELECT * FROM params WHERE setup = ? ORDER BY run DESC",
+      setup,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+      }).then((result) => {
+        let summary = {}
+        length = result[0].length;
+
+        if (queryType == 'paged') {
+          let startId = (page - 1) * limit;
+          let endId = page * limit;
+          summary = buildSummary(result[0].slice(startId, endId), startId, length)
+        } else {    // queryType = 'bulk'
+          summary = buildSummary(result[0], 0, length)
+        }
+        
+        res.send({ data: summary, total: length });
+      });
+  }
+});
+
+// Route to get one run from a setup by run number
+// example: /api/2/run/1988    (get run 1988 of setup 2)
+runapp.get("/api/:setup/run/:run", (req, res) => {
+  const setup = parseInt(req.params.setup);
+  const run = parseInt(req.params.run);
+
+  if (isNaN(setup) || isNaN(run)) {
+    res.send([]);
+  } else {
+    // get run by setup and run number
+    db.query(
+      "SELECT * FROM params WHERE setup = ? AND run = ?",
+      [setup, run],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    ).then((result) => {
+      if (result[0].length == 0)
+        res.send([])
+      else
+        buildRun(result[0][0]).then((result) => res.send(result));
+    });
+  }
+});
+
+// Route to get one run from a setup by position
+// example: /api/2/id/120     (get run in position 120 of setup 2)
+runapp.get("/api/:setup/id/:id", (req, res) => {
+  const setup = parseInt(req.params.setup);
+  const id = parseInt(req.params.id);
+
+  let query = `SELECT * FROM params WHERE setup = ${setup} ORDER BY run ASC LIMIT 1`;
+  if (id > 0)
+    query = query + ` OFFSET ${id}`
+
+  if (isNaN(setup) || isNaN(id)) {
+    res.send([]);
+  } else {
+    db.query(
+      query,
+      [],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    ).then((result) => {
+      if (result[0].length == 0)
+        res.send([])
+      else
+        buildRun(result[0][0]).then((result) => res.send(result));
+    });
+  }
+
 });
 
 runapp.use(express.static(path.join(__dirname, ".", "build")));
