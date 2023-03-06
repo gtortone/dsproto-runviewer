@@ -9,14 +9,13 @@ import RunDataService from "../services/run.service";
 import RunInfoTab from "./runInfoTab.component";
 
 const RunInfo = (props) => {
-  const [id, setId] = useState(props.location.state.idnum);
-  const [runId, setRunId] = useState(props.location.state.runSet[id].runNumber);
+  const [id, setId] = useState(props.location.state.id);
   const [currentRun, setCurrentRun] = useState(Object);
   let setup = props.location.state.setup;
-  let runCount = props.location.state.runCount;
+  let count = props.location.state.count;
 
-  const retrieveRun = (setup, runNumber) => {
-    RunDataService.get(setup, runNumber)
+  const retrieveRun = (setup, id) => {
+    RunDataService.getRunById(setup, id)
       .then((response) => {
         setCurrentRun(response.data[0]);
       })
@@ -26,19 +25,17 @@ const RunInfo = (props) => {
   };
 
   useEffect(() => {
-    retrieveRun(setup, runId);
-  }, [setup, runId]);
+    retrieveRun(setup, id);
+  }, [setup, id]);
 
   const showPrevRun = () => {
-    let newId = id + 1;
+    let newId = id - 1;
     setId(newId);
-    setRunId(props.location.state.runSet[newId].runNumber);
   };
 
   const showNextRun = () => {
-    let newId = id - 1;
+    let newId = id + 1;
     setId(newId);
-    setRunId(props.location.state.runSet[newId].runNumber);
   };
 
   const renderButtonGroup = () => {
@@ -66,7 +63,7 @@ const RunInfo = (props) => {
               borderColor: "primary.main",
               color: "primary.main",
             }}
-            disabled={id === runCount - 1}
+            disabled={id === 0}
             onClick={showPrevRun}
           >
             <Typography variant="button">Previous run</Typography>
@@ -79,7 +76,7 @@ const RunInfo = (props) => {
               borderColor: "primary.main",
               color: "primary.main",
             }}
-            disabled={id === 0}
+            disabled={id === count-1}
             onClick={showNextRun}
           >
             <Typography variant="button">Next run</Typography>
@@ -98,22 +95,6 @@ const RunInfo = (props) => {
         justifyContent: "center",
       }}
     >
-      <Box
-        sx={{
-          width: 1 / 5,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          alignSelf: "center",
-          borderRadius: 1,
-          border: 1,
-          borderColor: "primary.main",
-          color: "primary.main",
-          p: 0.5,
-        }}
-      >
-        <Typography variant='body1'>run number: {runId}</Typography>
-      </Box>
       {renderButtonGroup()}
       <RunInfoTab setup={setup} currentRun={currentRun}/>
     </Box>
