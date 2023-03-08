@@ -70,7 +70,7 @@ const RunInfoTab = (props) => {
         aria-label="wrapped label tabs example"
       >
         <Tab value={0} label="Info" />
-        {props.currentRun.start.HV && <Tab value={1} label="High Voltage" />}
+        {props.currentRun.start.HV && <Tab value={1} label="Power" />}
         {props.currentRun.start.SM && <Tab value={2} label="Steering Module" />}
         {props.currentRun.start.CM && <Tab value={3} label="Control Module" />}
         {props.currentRun.start.BD && <Tab value={4} label="Digitizers" />}

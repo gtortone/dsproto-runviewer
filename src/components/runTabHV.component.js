@@ -29,6 +29,54 @@ function getMetricByName(name, data) {
   return found;
 }
 
+function renderChannelStatus(ch) {
+  let statusValue = getMetricByName('Status', ch.metrics).value.trim().toLowerCase();
+  let statusStyle, rowStyle, cellStyle;
+
+  if (statusValue === 'on') {
+    statusValue = statusValue.toUpperCase();
+    rowStyle = {background:'lightgreen'}
+    statusStyle = {color: 'green', fontWeight: 'bold'}
+  } else if (statusValue === 'off') {
+    statusValue = statusValue.toUpperCase();
+    statusStyle = {color: 'red', fontWeight: 'bold'}
+  } else if (statusValue === 'externaldisable') {
+    statusStyle = {color: 'gray'}
+    cellStyle = {color: 'gray'}
+  }
+
+  return (
+  <TableRow key={ch.name} sx={rowStyle}>
+    <TableCell component="th" scope="row" sx={cellStyle}>
+      {ch.name}
+    </TableCell>
+    <TableCell align="right" sx={cellStyle}>
+      {parseFloat(getMetricByName('V0', ch.metrics).value).toFixed(2)}
+      {" "}
+      {getMetricByName('V0', ch.metrics).unit}
+    </TableCell>
+    <TableCell align="right" sx={cellStyle}>
+      {parseFloat(getMetricByName('VMon', ch.metrics).value).toFixed(2)}
+      {" "}
+      {getMetricByName('VMon', ch.metrics).unit}
+    </TableCell>
+    <TableCell align="right" sx={cellStyle}>
+      {parseFloat(getMetricByName('I0', ch.metrics).value).toFixed(2)}
+      {" "}
+      {getMetricByName('I0', ch.metrics).unit}
+    </TableCell>
+    <TableCell align="right" sx={cellStyle}>
+      {parseFloat(getMetricByName('IMon', ch.metrics).value).toFixed(2)}
+      {" "}
+      {getMetricByName('IMon', ch.metrics).unit}
+    </TableCell>
+    <TableCell align="right" sx={statusStyle}>
+      {statusValue}
+    </TableCell>
+  </TableRow>
+  );
+};
+
 const RunTabHV = (props) => {
   const hvStart = props.currentRun.start.HV;
   const hvStop =
@@ -81,40 +129,16 @@ const RunTabHV = (props) => {
               </TableHead>
               <TableBody>
                 {mod.channels.map((ch) => (
-                  <TableRow key={ch.name}>
-                    <TableCell component="th" scope="row">
-                      {ch.name}
-                    </TableCell>
-                    <TableCell align="right">
-                      {parseFloat(getMetricByName('V0', ch.metrics).value).toFixed(2)}
-                      {" "}
-                      {getMetricByName('V0', ch.metrics).unit}
-                    </TableCell>
-                    <TableCell align="right">
-                      {parseFloat(getMetricByName('VMon', ch.metrics).value).toFixed(2)}
-                      {" "}
-                      {getMetricByName('VMon', ch.metrics).unit}
-                    </TableCell>
-                    <TableCell align="right">
-                      {parseFloat(getMetricByName('I0', ch.metrics).value).toFixed(2)}
-                      {" "}
-                      {getMetricByName('I0', ch.metrics).unit}
-                    </TableCell>
-                    <TableCell align="right">
-                      {parseFloat(getMetricByName('IMon', ch.metrics).value).toFixed(2)}
-                      {" "}
-                      {getMetricByName('IMon', ch.metrics).unit}
-                    </TableCell>
-                    <TableCell align="right">
-                      {getMetricByName('Status', ch.metrics).value}
-                    </TableCell>
-                  </TableRow>
+                  <>
+                    {renderChannelStatus(ch)}
+                  </>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-        ))}
-      </Box>
+        ))
+        }
+      </Box >
     );
   };
 
