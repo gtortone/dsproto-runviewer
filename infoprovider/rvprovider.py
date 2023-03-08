@@ -22,6 +22,7 @@ parser.add_argument('--setup', action='store', type=int, help='DS proto setup [1
 parser.add_argument('--dump', action='store_true', help='dump json to screen without store it on database')
 parser.add_argument('--sync', action='store_true', help='synchronize with state transition')
 parser.add_argument('--run', action='store', type=int, help='run number')
+parser.add_argument('--force', action='store_true', help='force delete of run in database before insert')
 parser.add_argument('--host', action='store', type=str, help='MIDAS hostname')
 parser.add_argument('--expt', action='store', type=str, help='MIDAS experiment name')
 parser.add_argument('--verbose', action='store_true', help='print additional info on screen')
@@ -159,10 +160,14 @@ if odbSource == 'ONLINE':
         # update start summary
         db.updateStartField(args.setup, runNumber, json.dumps(summary))
 elif odbSource == 'FILE':
-    if not db.hasRun(args.setup, runNumber):
-        db.updateStartField(args.setup, runNumber, json.dumps(summaryStart))
-        db.updateStopField(args.setup, runNumber, json.dumps(summaryStop))
-    else:
-        print(f"I: run {runNumber} already in db - no action executed")
+    if db.hasRun(args.setup, runNumber):
+        if args.force:
+            db.delete(args.setup, runNumber)
+            print(f"I: run {runNumber} already in db - removed")
+        else:
+            print(f"I: run {runNumber} already in db - no action executed")
+            sys.exit(0)
+    db.updateStartField(args.setup, runNumber, json.dumps(summaryStart))
+    db.updateStopField(args.setup, runNumber, json.dumps(summaryStop))
+    print(f"I: run {runNumber} - info added/updated")
 
-sys.exit(0)

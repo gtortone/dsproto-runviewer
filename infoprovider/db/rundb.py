@@ -29,3 +29,8 @@ class RunDb:
         update = f'UPDATE ds.params SET jsonStop = \'{summary}\' WHERE setup = {setup} AND run = {run}'
         self.cursor.execute(update)
         self.db.commit()
+
+    def delete(self, setup, run):
+        remove = f'DELETE from ds.params WHERE setup = {setup} AND run = {run}'
+        self.cursor.execute(remove)
+        self.db.commit()
