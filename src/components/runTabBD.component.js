@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -11,6 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import Button from "@mui/material/Button"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -26,6 +27,41 @@ const RunTabBD = (props) => {
     props.currentRun.info.status === "finished"
       ? props.currentRun.stop.BD
       : undefined;
+
+  const topButtonStyle = {
+    m: 2,
+    p: 0,
+    width: 1 / 6,
+    borderRadius: 1,
+    border: 1,
+    borderColor: "primary.main",
+    color: "primary.main",
+  }
+
+  // first accordion expanded by default
+  const [expandedAccordions, setExpandedAccordions] = useState([0]);
+
+  const accordionClicked = (index) => {
+    // check if accordion is expanded
+    if (expandedAccordions.includes(index))
+      // remove index from list else add index to list
+      setExpandedAccordions(
+        expandedAccordions.filter((number) => number !== index)
+      );
+    else setExpandedAccordions([...expandedAccordions, index]);
+  };
+
+  const collapseAll = () => {
+    setExpandedAccordions([]);
+  };
+
+  const expandAll = () => {
+    const newArray = [];
+    const n = bdStart.modules.length
+    for (var i = 0; i < n; i++)
+      newArray.push(i);
+    setExpandedAccordions(newArray);
+  };
 
   const renderListItem = (name, value) => {
     return (
@@ -394,8 +430,13 @@ const RunTabBD = (props) => {
   const renderBDTable = (bd) => {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
-        {bd.modules.map((mod) => (
-          <Accordion>
+        <Box>
+          <Button sx={topButtonStyle} onClick={expandAll}>Expand all</Button>
+          <Button sx={topButtonStyle} onClick={collapseAll}>Collapse all</Button>
+        </Box>
+        {bd.modules.map((mod, index) => (
+          <Accordion onChange={() => accordionClicked(index)}
+          expanded={expandedAccordions.includes(index)}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h6" fontWeight="bold">
                 {mod.name}

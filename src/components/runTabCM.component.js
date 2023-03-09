@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -9,6 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Accordion from "@mui/material/Accordion";
+import Button from "@mui/material/Button"
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -31,11 +32,51 @@ const RunTabCM = (props) => {
     }
   };
 
+  const topButtonStyle = {
+    m: 2,
+    p: 0,
+    width: 1 / 6,
+    borderRadius: 1,
+    border: 1,
+    borderColor: "primary.main",
+    color: "primary.main",
+  }
+
+  // first accordion expanded by default
+  const [expandedAccordions, setExpandedAccordions] = useState([0]);
+
+  const accordionClicked = (index) => {
+    // check if accordion is expanded
+    if (expandedAccordions.includes(index))
+      // remove index from list else add index to list
+      setExpandedAccordions(
+        expandedAccordions.filter((number) => number !== index)
+      );
+    else setExpandedAccordions([...expandedAccordions, index]);
+  };
+
+  const collapseAll = () => {
+    setExpandedAccordions([]);
+  };
+
+  const expandAll = () => {
+    const newArray = [];
+    const n = cmStart.pdus.length
+    for (var i = 0; i < n; i++)
+      newArray.push(i);
+    setExpandedAccordions(newArray);
+  };
+
   const renderCMTable = (cm) => {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
-        {cm.pdus.map((pdu) => (
-          <Accordion>
+        <Box>
+          <Button sx={topButtonStyle} onClick={expandAll}>Expand all</Button>
+          <Button sx={topButtonStyle} onClick={collapseAll}>Collapse all</Button>
+        </Box>
+        {cm.pdus.map((pdu, index) => (
+          <Accordion onChange={() => accordionClicked(index)}
+            expanded={expandedAccordions.includes(index)}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h6" fontWeight="bold">
                 PDU {pdu.number}

@@ -117,7 +117,7 @@ const RunTabHV = (props) => {
                     {"Vmon"}
                   </TableCell>
                   <TableCell style={{ width: 100 }} align="right">
-                    {"Iset"}
+                    {"Ilimit"}
                   </TableCell>
                   <TableCell style={{ width: 100 }} align="right">
                     {"Imon"}
