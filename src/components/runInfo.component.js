@@ -112,7 +112,7 @@ const RunInfo = () => {
       <Dialog fullWidth={true} open={openShareDlg}>
         <DialogTitle>Share run info</DialogTitle>
         <DialogContent>
-          <TextField sx={{ width: '50ch' }} id="outlined-basic" variant="outlined" size="small" value={runUrl} />
+          <TextField sx={{ width: '60ch' }} id="outlined-basic" variant="outlined" size="small" value={runUrl} />
         </DialogContent>
         <DialogActions>
           <Button
