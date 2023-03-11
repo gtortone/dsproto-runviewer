@@ -30,6 +30,7 @@ const AppBarButton = withStyles(theme => ({
 const AppToolBar = () => {
   const classes = useStyles();
   const setView = useSetRecoilState(viewState)
+  const baseurl = process.env.REACT_APP_BASEURL;
 
   return (
     <Box>
@@ -39,7 +40,7 @@ const AppToolBar = () => {
           <AppBarButton
             sx={{ display: "flex", justifyContent: "center", width: 0.5 / 5, p: 1 }}
             component={NavLink}
-            to="/"
+            to={baseurl}
             color="inherit"
             onClick={() => setView((old) => ({...old, setup: 1}))}
           >
@@ -48,7 +49,7 @@ const AppToolBar = () => {
           <AppBarButton
             sx={{ display: "flex", justifyContent: "center", width: 0.5 / 5, p: 1 }}
             component={NavLink}
-            to="/"
+            to={baseurl}
             color="inherit"
             onClick={() => setView((old) => ({...old, setup: 2}))}
           >
