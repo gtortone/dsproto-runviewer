@@ -17,6 +17,7 @@ const RunInfoProvider = (props) => {
   const [view, setView] = useRecoilState(viewState);
   const [isLoading, setIsLoading] = useState(true)
   const [found, setFound] = useState(false)
+  const baseurl = process.env.REACT_APP_BASEURL;
 
   // check parameters
   const setup = parseInt(params.setup)
@@ -47,7 +48,7 @@ const RunInfoProvider = (props) => {
   return (
     <Box sx={{ display: 'flex', m: 2, p: 2, flexDirection: "row", justifyContent: "center", }}>
       {isLoading && <CircularProgress />}
-      {!isLoading && found && <Navigate to="/run" />}
+      {!isLoading && found && <Navigate to={`${baseurl}/run`} />}
       {!isLoading && !found && <Typography variant="button">Run {run} not found in setup {setup}</Typography>}
     </Box>
   );
