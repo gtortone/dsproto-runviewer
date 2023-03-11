@@ -1,5 +1,6 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import { makeStyles, withStyles } from "@material-ui/core";
 
 import Box from "@mui/material/Box";
@@ -7,6 +8,9 @@ import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+
+// states
+import { viewState } from "../state/atoms"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,34 +27,30 @@ const AppBarButton = withStyles(theme => ({
   }
 }))(Button);
 
-const AppToolBar = (props) => {
+const AppToolBar = () => {
   const classes = useStyles();
-  const baseurl = process.env.REACT_APP_BASEURL;
+  const setView = useSetRecoilState(viewState)
 
   return (
     <Box>
-      <AppBar className={classes.root} sx={{ display: "flex", flexDirection: "row", width: 5/5, color: "white"}} position="static">
-        <Toolbar sx={{ display: "flex", flexDirection: "row", width: 5/5, bgcolor: 'primary.dark', color: "white"}}>
-          <Typography variant="h6" sx={{ display: "flex", justifyContent: "center", width: 0.5/5, color: 'white'}}>Run Viewer</Typography>
+      <AppBar className={classes.root} sx={{ display: "flex", flexDirection: "row", width: 5 / 5, color: "white" }} position="static">
+        <Toolbar sx={{ display: "flex", flexDirection: "row", width: 5 / 5, bgcolor: 'primary.dark', color: "white" }}>
+          <Typography variant="h6" sx={{ display: "flex", justifyContent: "center", width: 0.5 / 5, color: 'white' }}>Run Viewer</Typography>
           <AppBarButton
-            sx={{ display: "flex", justifyContent: "center", width: 0.5/5, p: 1 }}
-            component={RouterLink}
-            to={{
-              pathname: baseurl + "/runlist",
-            }}
+            sx={{ display: "flex", justifyContent: "center", width: 0.5 / 5, p: 1 }}
+            component={NavLink}
+            to="/"
             color="inherit"
-            onClick={() => props.changeSetup(1)}
+            onClick={() => setView((old) => ({...old, setup: 1}))}
           >
             Setup-1
           </AppBarButton>
           <AppBarButton
-            sx={{ display: "flex", justifyContent: "center", width: 0.5/5, p: 1 }}
-            component={RouterLink}
-            to={{
-              pathname: baseurl + "/runlist",
-            }}
+            sx={{ display: "flex", justifyContent: "center", width: 0.5 / 5, p: 1 }}
+            component={NavLink}
+            to="/"
             color="inherit"
-            onClick={() => props.changeSetup(2)}
+            onClick={() => setView((old) => ({...old, setup: 2}))}
           >
             Setup-2
           </AppBarButton>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { NavLink } from "react-router-dom";
 import RunDataService from "../services/run.service";
 import { makeStyles } from "@material-ui/core";
 
@@ -17,6 +18,10 @@ import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import RunHeader from "./runHeader.component";
+
+// states
+import { viewState } from "../state/atoms"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,7 +45,10 @@ const useStyles2 = makeStyles({
   },
 });
 
-const RunList = (props) => {
+const RunList = () => {
+
+  const [view, setView] = useRecoilState(viewState);
+
   const [pageState, setPageState] = useState({
     isLoading: false,
     data: [],
@@ -48,7 +56,7 @@ const RunList = (props) => {
   })
 
   // page state
-  const defaultPage = { setup: props.setup, number: 0 };
+  const defaultPage = { setup: view.setup, number: 0 };
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem("page");
     const initialValue = JSON.parse(saved);
@@ -90,17 +98,11 @@ const RunList = (props) => {
       width: 120,
       renderCell: (params) => {
         // params: GridRowParams
-        const newTo = {
-          pathname: process.env.REACT_APP_BASEURL + "/run",
-          state: {
-            setup: props.setup,
-            run: params.value,
-            id: params.row.id,
-            count: pageState.total
-          },
-        };
         return (
-          <Link to={newTo} component={RouterLink}>
+          <Link
+            onClick={() => { setView((old) => ({ ...old, runNumber: params.value, runId: params.row.id, total: pageState.total })) }}
+            to={process.env.REACT_APP_BASEURL + "/run"}
+            component={NavLink}>
             <strong>{params.value}</strong>
           </Link>
         );
@@ -198,15 +200,17 @@ const RunList = (props) => {
   };
 
   useEffect(() => {
+    setView(old => ({ ...old, runNumber: null }))
     setPageState(old => ({ ...old, data: [] }))
-    retrieveRunset(props.setup);
+    retrieveRunset(view.setup);
     const savedPage = JSON.parse(localStorage.getItem("page"));
-    if (savedPage && savedPage.setup !== props.setup) {
-      const p = { setup: props.setup, number: 0 };
+    if (savedPage && savedPage.setup !== view.setup) {
+      const p = { setup: view.setup, number: 0 };
       setPage(p);
       localStorage.setItem("page", JSON.stringify(p));
     }
-  }, [props.setup]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view.setup]);
 
   const CustomToolbar = () => {
     return (
@@ -272,7 +276,7 @@ const RunList = (props) => {
   };
 
   const changePage = (apiRef, newPage) => {
-    const p = { setup: props.setup, number: newPage };
+    const p = { setup: view.setup, number: newPage };
     setPage(p);
     localStorage.setItem("page", JSON.stringify(p));
   };
@@ -282,9 +286,9 @@ const RunList = (props) => {
     localStorage.setItem("filter", JSON.stringify(filter));
   };
 
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <RunHeader />
       <Box
         mt={1}
         sx={{

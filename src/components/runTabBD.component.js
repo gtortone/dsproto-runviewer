@@ -435,7 +435,7 @@ const RunTabBD = (props) => {
           <Button sx={topButtonStyle} onClick={collapseAll}>Collapse all</Button>
         </Box>
         {bd.modules.map((mod, index) => (
-          <Accordion onChange={() => accordionClicked(index)}
+          <Accordion onChange={() => accordionClicked(index)} key={index}
           expanded={expandedAccordions.includes(index)}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h6" fontWeight="bold">

@@ -14,8 +14,8 @@ class RunDataService {
     return axios.get(`${this.baseurl}/api/${setup}/summary?page=${page}&limit=${size}`);
   }
 
-  getRunByNumber(setup, run) {
-    return axios.get(`${this.baseurl}/api/${setup}/run/${run}`);
+  getRunByNumber(setup, run, position='') {
+    return axios.get(`${this.baseurl}/api/${setup}/run/${run}?pos=${position}`);
   }
 
   getRunById(setup, id) {
@@ -23,4 +23,6 @@ class RunDataService {
   }
 }
 
-export default new RunDataService();
+const ds = new RunDataService()
+
+export default ds;
