@@ -18,6 +18,7 @@ import Chip from "@mui/material/Chip";
 import Icon from "@mui/material/Icon";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+
 import RunHeader from "./runHeader.component";
 
 // states
@@ -45,7 +46,7 @@ const useStyles2 = makeStyles({
   },
 });
 
-const RunList = () => {
+const RunList = (props) => {
 
   const [view, setView] = useRecoilState(viewState);
 
@@ -101,7 +102,7 @@ const RunList = () => {
         return (
           <Link
             onClick={() => { setView((old) => ({ ...old, runNumber: params.value, runId: params.row.id, total: pageState.total })) }}
-            to={process.env.REACT_APP_BASEURL + "/run"}
+            to={'/runs/info'}
             component={NavLink}>
             <strong>{params.value}</strong>
           </Link>
@@ -200,6 +201,11 @@ const RunList = () => {
   };
 
   useEffect(() => {
+    
+    // check props to allow routes on 'setup-1' and 'setup-2'
+    if ('setup' in props)
+      setView((old) => ({...old, setup: props.setup}))
+
     setView(old => ({ ...old, runNumber: null }))
     setPageState(old => ({ ...old, data: [] }))
     retrieveRunset(view.setup);
@@ -288,7 +294,6 @@ const RunList = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <RunHeader />
       <Box
         mt={1}
         sx={{
@@ -299,6 +304,7 @@ const RunList = () => {
           alignSelf: "center",
         }}
       >
+        <RunHeader />
         <DataGrid
           sx={{
             width: 5 / 5,

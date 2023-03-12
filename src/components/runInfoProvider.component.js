@@ -13,13 +13,13 @@ import { viewState } from "../state/atoms"
 const RunInfoProvider = (props) => {
 
   const params = useParams()
+  console.log(params)
   // eslint-disable-next-line no-unused-vars
   const [view, setView] = useRecoilState(viewState);
   const [isLoading, setIsLoading] = useState(true)
   const [found, setFound] = useState(false)
-  const baseurl = process.env.REACT_APP_BASEURL;
-
-  // check parameters
+  // const baseurl = process.env.REACT_APP_BASEURL;
+  
   const setup = parseInt(params.setup)
   const run = parseInt(params.run)
 
@@ -41,14 +41,20 @@ const RunInfoProvider = (props) => {
       });
       setIsLoading(false);
     }
-    getRuns();
+    if( (setup !== 1) && (setup !== 2) ) {
+      setIsLoading(false);
+      setFound(false);
+    } else { 
+      setView((old) => ({...old, setup: setup}))
+      getRuns();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <Box sx={{ display: 'flex', m: 2, p: 2, flexDirection: "row", justifyContent: "center", }}>
       {isLoading && <CircularProgress />}
-      {!isLoading && found && <Navigate to={`${baseurl}/run`} />}
+      {!isLoading && found && <Navigate to={`/runs/info`} />}
       {!isLoading && !found && <Typography variant="button">Run {run} not found in setup {setup}</Typography>}
     </Box>
   );

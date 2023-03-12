@@ -6,7 +6,7 @@ import App from "./App";
 
 ReactDOM.render(
   <RecoilRoot>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.REACT_APP_BASEURL}>
       <App />
     </BrowserRouter>
   </RecoilRoot>,

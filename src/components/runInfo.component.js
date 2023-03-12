@@ -36,7 +36,7 @@ const RunInfo = () => {
       .then((response) => {
         setCurrentRun(response.data[0]);
         setView((old) => ({ ...old, runNumber: response.data[0].info.runNumber }));
-        setRunUrl(`${window.location.protocol}//${window.location.host}${baseurl}/run/${view.setup}/${response.data[0].info.runNumber}`)
+        setRunUrl(`${window.location.protocol}//${window.location.host}${baseurl}/runs/get/${view.setup}/${response.data[0].info.runNumber}`)
       })
       .catch((e) => {
         console.log(e);
