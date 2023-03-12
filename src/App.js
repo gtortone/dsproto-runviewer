@@ -15,7 +15,6 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
-  // const baseurl = process.env.REACT_APP_BASEURL;
 
   return (
     <Box sx={{
