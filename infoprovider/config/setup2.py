@@ -7,6 +7,7 @@ from providers.sequencer import SequencerProvider
 from providers.steering import SteeringModuleProvider
 from providers.controlbox import ControlModuleProvider
 from providers.vx274x import VX274xProvider
+from providers.dt5751 import DT5751Provider
 #from providers.cryoepics import CryoEpicsProvider
 from providers.epics import EpicsProvider
 from providers.utils import *
@@ -51,5 +52,8 @@ def getSummary(odb):
 
     if isRunning(odb, 'VX2740_Group_00'):
         dictMerged['BD'] = VX274xProvider(odb['Equipment']['VX2740_Config_Group_000'], odb['Equipment']['VX2740_Data_Group_000']).getData()
+
+    if isRunning(odb, 'feodt5751MTI00'):
+        dictMerged['DD'] = DT5751Provider(odb['Equipment']['DT5751_Data00']).getData()
 
     return dictMerged
