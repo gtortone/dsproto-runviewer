@@ -20,9 +20,11 @@ const runapp = express.Router();
 // get total number of channels 
 const getChannelsNum = (bd) => {
   let num = 0
-  bd.modules.map((mod) => {
-    num += mod.channels.length
-  });
+  if (bd.modules) {
+    bd.modules.map((mod) => {
+      num += mod.channels.length
+    });
+  }
   return num
 }
 
@@ -42,10 +44,11 @@ const buildSummary = (result, startId, length) => {
   let summary = [];
   let status = "";
   let eventsSent = "-";
-  let channelsNum = 0;
 
   result.map((obj, index) => {
     let doc = {};
+    let channelsNum = 0;
+
     if (obj["jsonstop"] === null) {
       // run not finished yet or aborted
       doc = JSON.parse(obj["jsonstart"]);
@@ -54,15 +57,38 @@ const buildSummary = (result, startId, length) => {
     } else {
       doc = JSON.parse(obj["jsonstop"]);
       try {
-        eventsSent = parseInt(doc["BD"]["eventsSent"])
+
+        let digitizers = Array()
+        if (Array.isArray(doc["BD"]))
+          digitizers = Array(...doc["BD"]);
+        else
+          digitizers = Array(doc["BD"]);
+
+        // set total number of events
+        eventsSent = 0;
+        digitizers.forEach(d => { eventsSent += d.eventsSent })
+
       } catch {
         eventsSent = "-";
       }
       status = "finished";
     }
-    // set total number of channels
-    let doc2 = JSON.parse(obj["jsonstart"]);
-    doc2["BD"] && (channelsNum = getChannelsNum(doc2["BD"]))
+
+    let doc2 = JSON.parse(obj["jsonstart"])
+
+    // check if BD exists
+    if (doc2["BD"]) {
+
+      let digitizers = Array()
+      if (Array.isArray(doc2["BD"]))
+        digitizers = Array(...doc2["BD"]);
+      else
+        digitizers = Array(doc2["BD"]);
+
+      // set total number of channels
+      digitizers.forEach(d => { channelsNum += getChannelsNum(d) })
+    }
+
     let summaryItem = {
       id: length - (index + startId) - 1,
       status,
@@ -181,7 +207,7 @@ runapp.get("/api/:setup/summary", (req, res) => {
         } else {    // queryType = 'bulk'
           summary = buildSummary(result[0], 0, length)
         }
-        
+
         res.send({ data: summary, total: length });
       });
   }
