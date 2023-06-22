@@ -163,7 +163,7 @@ class DT5751Provider:
                     channelList.append(channel)
 
             if len(channelList) > 0:
-                triggerOutput['channelList'] = channelList
-                triggerOutput['channelLogic'] = logic[(mask & 0x300) >> 8]
+                triggerOutput['channelsList'] = channelList
+                triggerOutput['channelsLogic'] = logic[(mask & 0x300) >> 8]
 
             return triggerOutput
