@@ -38,6 +38,11 @@ class DT5751Provider:
                 moduleItem['triggerSource'] = self.getTriggerSource(board)
                 moduleItem['triggerOutput'] = self.getTriggerOutput(board)
 
+                if 'channels' in moduleItem['triggerSource']:
+                    polValue = toInt(odb['Settings'][f'Board{board}']['Board Configuration'])
+                    polarity = 'under-threshold' if polValue & 0x40 else 'over-threshold'
+                    moduleItem['selfTriggerPolarity'] = polarity
+
                 moduleList.append(moduleItem)
 
                 self.data['modules'] = moduleList 
