@@ -54,15 +54,19 @@ def getSummary(odb):
         data = EpicsProvider(odb['Equipment']['EpicsFrontend']).getData()
         if len(data['modules'][0]['channels']) > 0:
             dictMerged['DT'] = data
+    
+    digife = []     # digitizers frontends
 
     if isRunning(odb, 'feov1725MTI00'):
-        dictMerged['BD'] = V1725BProvider(odb['Equipment']['V1725_Data00']).getData()
+        digife.append(V1725BProvider(odb['Equipment']['V1725_Data00']).getData())
 
     if isRunning(odb, 'VX2740_Group_00'):
-        dictMerged['BD'] = VX274xProvider(odb['Equipment']['VX2740_Config_Group_000'],
-        odb['Equipment']['VX2740_Data_Group_000']).getData()
+        digife.append(VX274xProvider(odb['Equipment']['VX2740_Config_Group_000'], odb['Equipment']['VX2740_Data_Group_000']).getData())
 
     if isRunning(odb, 'feodt5751MTI00'):
-            dictMerged['DD'] = DT5751Provider(odb['Equipment']['DT5751_Data00']).getData()
+        digife.append(DT5751Provider(odb['Equipment']['DT5751_Data00']).getData())
+
+    if (len(digife) > 0):
+        dictMerged['BD'] = digife
 
     return dictMerged
