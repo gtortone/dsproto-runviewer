@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import time
+import socket
 import datetime
 import argparse
 import midas.client
@@ -11,16 +12,15 @@ import midas.file_reader
 import json
 from dotenv import load_dotenv
 
-from config.setup1 import getSummary as getSetup1Summary
-from config.setup2 import getSummary as getSetup2Summary
+from config.frontend import getSummary
 from db.rundb import RunDb
 
 load_dotenv()
 
 parser = argparse.ArgumentParser(description="DS Proto MIDAS RunViewer information provider")
-parser.add_argument('--setup', action='store', type=int, help='DS proto setup [1, 2]', choices=[1,2])
 parser.add_argument('--dump', action='store_true', help='dump json to screen without store it on database')
 parser.add_argument('--sync', action='store_true', help='synchronize with state transition')
+parser.add_argument('--rundir', action='store', type=str, help='run base directory')
 parser.add_argument('--run', action='store', type=int, help='run number')
 parser.add_argument('--force', action='store_true', help='force delete of run in database before insert')
 parser.add_argument('--host', action='store', type=str, help='MIDAS hostname')
@@ -32,11 +32,11 @@ sys.dont_write_bytecode = True
 
 # fetch whole ODB tree from file or online ODB
 if args.run:
-    if args.setup is None:
-        print('E: missing setup option')
+    if args.rundir is None:
+        print('E: missing rundir option')
         sys.exit(-1)
     run = str(args.run).zfill(int(os.getenv('RUNNUMWIDTH')))
-    rundir = os.getenv(f"RUNDIR{args.setup}") + '/' + f'run{run}'
+    rundir = f'{args.rundir}/run{run}'
     print('I: fetch ODB from run file')
     try:
         flist = os.listdir(rundir)
@@ -111,21 +111,11 @@ else:
     mclient.disconnect()
 
 summary = {}
-if(args.setup == 1):
-    if odbSource == 'ONLINE':
-        summary = getSetup1Summary(odb)
-    elif odbSource == 'FILE':
-        summaryStart = getSetup1Summary(startOdb)
-        summaryStop = getSetup1Summary(stopOdb)
-elif(args.setup == 2):
-    if odbSource == 'ONLINE':
-        summary = getSetup2Summary(odb)
-    elif odbSource == 'FILE':
-        summaryStart = getSetup2Summary(startOdb)
-        summaryStop = getSetup2Summary(stopOdb)
-else:
-    print('E: unknown setup number')
-    sys.exit(-1)
+if odbSource == 'ONLINE':
+    summary = getSummary(odb)
+elif odbSource == 'FILE':
+    summaryStart = getSummary(startOdb)
+    summaryStop = getSummary(stopOdb)
 
 if odbSource == 'ONLINE':
     runNumber = summary["RI"]["runNumber"]
@@ -152,22 +142,34 @@ if args.dump:
 
 db = RunDb(os.getenv('DBHOST'), os.getenv('DBUSER'), os.getenv('DBPASS'), os.getenv('DBNAME'))
 
+# temporary patch waiting for setup-1/setup-2 suppression
+host = socket.gethostname()
+hostid = 0
+if (host == 'darkside-cdaq.na.infn.it'):
+   hostid = 1
+elif (host == 'darkside-daq.na.infn.it'):
+   hostid = 2
+else:
+   print(f'host {host} not supported - abort')
+   sys.exit(-1)
+#
+
 if odbSource == 'ONLINE':
-    if db.hasRun(args.setup, runNumber):
+    if db.hasRun(hostid, runNumber):
         # update stop summary
-        db.updateStopField(args.setup, runNumber, json.dumps(summary))
+        db.updateStopField(hostid, runNumber, json.dumps(summary))
     else:
         # update start summary
-        db.updateStartField(args.setup, runNumber, json.dumps(summary))
+        db.updateStartField(hostid, runNumber, json.dumps(summary))
 elif odbSource == 'FILE':
-    if db.hasRun(args.setup, runNumber):
+    if db.hasRun(hostid, runNumber):
         if args.force:
-            db.delete(args.setup, runNumber)
+            db.delete(hostid, runNumber)
             print(f"I: run {runNumber} already in db - removed")
         else:
             print(f"I: run {runNumber} already in db - no action executed")
             sys.exit(0)
-    db.updateStartField(args.setup, runNumber, json.dumps(summaryStart))
-    db.updateStopField(args.setup, runNumber, json.dumps(summaryStop))
+    db.updateStartField(hostid, runNumber, json.dumps(summaryStart))
+    db.updateStopField(hostid, runNumber, json.dumps(summaryStop))
     print(f"I: run {runNumber} - info added/updated")
 
