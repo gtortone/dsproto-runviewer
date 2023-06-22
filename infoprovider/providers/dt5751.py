@@ -21,7 +21,7 @@ class DT5751Provider:
                 moduleItem = {}
                 moduleItem['name'] = f'DT5751 board {board}'
 
-                self.data['desMode'] = bool(odb['Settings'][f'Board{board}']['Board Configuration'] & (1<<12))
+                moduleItem['desMode'] = bool(odb['Settings'][f'Board{board}']['Board Configuration'] & (1<<12))
 
                 channelList = []
                 channels = self.getReadoutChannels(board)
@@ -32,6 +32,7 @@ class DT5751Provider:
                     channelItem['threshold'] = toInt(self.odb['Settings'][f'Board{board}']['SelfTrigger_Threshold'][channel])
                     channelList.append(channelItem)
 
+                moduleItem['desMode'] = bool(odb['Settings'][f'Board{board}']['Board Configuration'] & (1<<12))
                 moduleItem['channels'] = channelList
                 moduleItem['waveform'] = self.getWaveformSetup(board)
                 moduleItem['triggerSource'] = self.getTriggerSource(board)
@@ -58,8 +59,9 @@ class DT5751Provider:
         timeUnits = [ 'ns', 'us', 'ms' ]
         bufferOrganization = self.odb['Settings'][f'Board{board}']['Buffer organization']
         customSize = self.odb['Settings'][f'Board{board}']['Custom size']
+        desMode = bool(self.odb['Settings'][f'Board{board}']['Board Configuration'] & (1<<12))
 
-        if (self.data['desMode']):
+        if (desMode):
             sramSize = 1.8 * 1024 * 1024 * 2        # 3.6MS / ch
         else:
             sramSize = 1.8 * 1024 * 1024            # 1.8MS / ch 
@@ -69,10 +71,10 @@ class DT5751Provider:
         else:
             wfSetup['samplesNumber'] = int(sramSize / numBuffers[bufferOrganization])
 
-        if (self.data['desMode']):
+        if (desMode):
            wfSetup['samplesNumber'] *= 2;
 
-        if (self.data['desMode']):
+        if (desMode):
             timeWidth = wfSetup['samplesNumber']/2      # 1 sample every 0.5ns (500ps)
         else:
             timeWidth = wfSetup['samplesNumber']        # 1 sample every 1ns
