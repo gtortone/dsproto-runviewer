@@ -22,10 +22,14 @@ import RunBorSection from "./runBorSection.component";
 import RunEorSection from "./runEorSection.component";
 
 const RunTabBD = (props) => {
-  const bdStart = props.currentRun.start.BD;
+  const bdStart = Array.isArray(props.currentRun.start.BD) ?
+    props.currentRun.start.BD : Array(props.currentRun.start.BD);
+
   const bdStop =
-    props.currentRun.info.status === "finished"
-      ? props.currentRun.stop.BD
+    props.currentRun.info.status === "finished" ?
+      (Array.isArray(props.currentRun.stop.BD) ?
+        props.currentRun.stop.BD
+        : Array(props.currentRun.stop.BD))
       : undefined;
 
   const topButtonStyle = {
@@ -57,8 +61,11 @@ const RunTabBD = (props) => {
 
   const expandAll = () => {
     const newArray = [];
-    const n = bdStart.modules.length
-    for (var i = 0; i < n; i++)
+    var n = 0;
+
+    bdStart.forEach((board) => n += board.modules.length);
+
+    for (var i=0; i<n; i++)
       newArray.push(i);
     setExpandedAccordions(newArray);
   };
@@ -79,7 +86,7 @@ const RunTabBD = (props) => {
   };
 
   const renderWaveformInfo = (type, wf, mod) => {
-    if (type === "V1725B") {
+    if (type === "V1725B" || type === "DT5751") {
       return (
         <List
           dense
@@ -134,7 +141,7 @@ const RunTabBD = (props) => {
 
   const renderTriggerSourceInfo = (type, ts) => {
     var content = [];
-    if (type === "V1725B") {
+    if (type === "V1725B" || type === "DT5751") {
       if (ts.signals) {
         content.push(
           <List
@@ -153,43 +160,76 @@ const RunTabBD = (props) => {
         );
       }
 
-      if (ts.couples) {
-        content.push(
-          <TableContainer sx={{ m: 1 }}>
-            <Table sx={{ width: 4 / 5 }} size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{ width: 100 }}>{"couple"}</TableCell>
-                  <TableCell style={{ width: 100 }} align="right">
-                    {"logic"}
-                  </TableCell>
-                  <TableCell style={{ width: 100 }} align="right">
-                    {"channel / threshold"}
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              {ts.couples.map((c) => (
-                <TableBody>
-                  <TableRow key={c.coupleNumber}>
-                    <TableCell component="th" scope="row">
-                      {c.coupleNumber}
+      if (type === "V1725B") {
+        if (ts.couples) {
+          content.push(
+            <TableContainer sx={{ m: 1 }}>
+              <Table sx={{ width: 4 / 5 }} size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: 100 }}>{"couple"}</TableCell>
+                    <TableCell style={{ width: 100 }} align="right">
+                      {"logic"}
                     </TableCell>
                     <TableCell style={{ width: 100 }} align="right">
-                      {c.logic}
-                    </TableCell>
-                    <TableCell style={{ width: 100 }} align="right">
-                      {c.channels.map((ch) => (
-                        <Box>
-                          {ch.number} / {ch.threshold}
-                        </Box>
-                      ))}
+                      {"channel / threshold"}
                     </TableCell>
                   </TableRow>
-                </TableBody>
-              ))}
-            </Table>
-          </TableContainer>
-        );
+                </TableHead>
+                {ts.couples.map((c) => (
+                  <TableBody>
+                    <TableRow key={c.coupleNumber}>
+                      <TableCell component="th" scope="row">
+                        {c.coupleNumber}
+                      </TableCell>
+                      <TableCell style={{ width: 100 }} align="right">
+                        {c.logic}
+                      </TableCell>
+                      <TableCell style={{ width: 100 }} align="right">
+                        {c.channels.map((ch) => (
+                          <Box>
+                            {ch.number} / {ch.threshold}
+                          </Box>
+                        ))}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                ))}
+              </Table>
+            </TableContainer>
+          );
+        }
+      }
+
+      if (type === "DT5751") {
+        if (ts.channels) {
+          content.push(
+            <TableContainer sx={{ m: 1 }}>
+              <Table sx={{ width: 4 / 5 }} size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ width: 100 }}>{"channel"}</TableCell>
+                    <TableCell style={{ width: 100 }} align="right">
+                      {"threshold"}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                {ts.channels.map((c) => (
+                  <TableBody>
+                    <TableRow key={c.channelNumber}>
+                      <TableCell component="th" scope="row">
+                        {c.channelNumber}
+                      </TableCell>
+                      <TableCell style={{ width: 100 }} align="right">
+                        {c.threshold}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                ))}
+              </Table>
+            </TableContainer>
+          );
+        }
       }
     }
     if (type.startsWith("VX274")) {
@@ -256,7 +296,7 @@ const RunTabBD = (props) => {
 
   const renderTriggerOutputInfo = (type, to) => {
     var content = [];
-    if (type === "V1725B") {
+    if (type === "V1725B" || type === "DT5751") {
       if (to.signals) {
         content.push(
           <List
@@ -271,13 +311,22 @@ const RunTabBD = (props) => {
             {to.signals.map((sig) => renderListItem("signal", sig))}
             {to.triggerSwRate &&
               renderListItem("trigger software rate", to.triggerSwRate + " Hz")}
-            {to.couplesList &&
+
+            {type === "V1725B" && to.couplesList &&
               renderListItem(
                 "couples list",
                 to.couplesList.map((item) => item + " ")
               )}
-            {to.couplesLogic &&
+            {type === "V1725B" && to.couplesLogic &&
               renderListItem("couples logic", to.couplesLogic)}
+
+            {type === "DT5751" && to.channelsList &&
+              renderListItem(
+                "channels list",
+                to.channelsList.map((item) => item + " ")
+              )}
+            {type === "DT5751" && to.channelsLogic &&
+              renderListItem("channels logic", to.channelsLogic)}
           </List>
         );
       }
@@ -318,6 +367,7 @@ const RunTabBD = (props) => {
                 <TableCell style={{ width: 100 }} align="right">
                   {"dynamic range"}
                 </TableCell>
+                
               </TableRow>
             </TableHead>
             <TableBody>
@@ -389,6 +439,41 @@ const RunTabBD = (props) => {
         </TableContainer>
       );
     }
+
+    if (type === "DT5751") {
+      return (
+        <TableContainer sx={{ m: 2 }}>
+          <Table sx={{ width: 4 / 5 }} size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ width: 100 }}>{"channel"}</TableCell>
+                <TableCell style={{ width: 100 }} align="right">
+                  {"threshold"}
+                </TableCell>
+                <TableCell style={{ width: 100 }} align="right">
+                  {"DAC offset"}
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {mod.channels.map((ch) => (
+                <TableRow key={ch.number}>
+                  <TableCell component="th" scope="row">
+                    {ch.number}
+                  </TableCell>
+                  <TableCell style={{ width: 100 }} align="right">
+                    {ch.threshold}
+                  </TableCell>
+                  <TableCell style={{ width: 100 }} align="right">
+                    {ch.dacOffset}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    }
   };
 
   const renderConfig = (type, mod) => {
@@ -425,53 +510,84 @@ const RunTabBD = (props) => {
         </Accordion>
       );
     }
+
+    if (type.startsWith("DT5751")) {
+      return (
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="body1">Config</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <List
+              dense
+              sx={{
+                ml: 5,
+                mr: 5,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {mod.desMode ? renderListItem("DES mode", "enabled") : renderListItem("DES mode", "disabled")}
+            </List>
+          </AccordionDetails>
+        </Accordion>
+      );
+    }
   };
 
+  const renderModule = (type, mod, index) => {
+    return (
+      <Accordion onChange={() => accordionClicked(index)} key={index}
+        expanded={expandedAccordions.includes(index)}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6" fontWeight="bold">
+            {mod.name}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {renderConfig(type, mod)}
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Waveform</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {renderWaveformInfo(type, mod.waveform, mod)}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Trigger Source</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {renderTriggerSourceInfo(type, mod.triggerSource)}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="body1">Trigger Output</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {renderTriggerOutputInfo(type, mod.triggerOutput)}
+            </AccordionDetails>
+          </Accordion>
+        </AccordionDetails>
+        {renderChannelsTable(type, mod)}
+      </Accordion>
+    );
+  }
+
   const renderBDTable = (bd) => {
+    let index = 0;
     return (
       <Box sx={{ display: "flex", flexDirection: "column", m: 2 }}>
         <Box>
           <Button sx={topButtonStyle} onClick={expandAll}>Expand all</Button>
           <Button sx={topButtonStyle} onClick={collapseAll}>Collapse all</Button>
         </Box>
-        {bd.modules.map((mod, index) => (
-          <Accordion onChange={() => accordionClicked(index)} key={index}
-          expanded={expandedAccordions.includes(index)}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6" fontWeight="bold">
-                {mod.name}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {renderConfig(bd.type, mod)}
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body1">Waveform</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {renderWaveformInfo(bd.type, mod.waveform, mod)}
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body1">Trigger Source</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {renderTriggerSourceInfo(bd.type, mod.triggerSource)}
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body1">Trigger Output</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {renderTriggerOutputInfo(bd.type, mod.triggerOutput)}
-                </AccordionDetails>
-              </Accordion>
-            </AccordionDetails>
-            {renderChannelsTable(bd.type, mod)}
-          </Accordion>
-        ))}
+        {bd.map((board) => (
+          board.modules.map((mod) => (renderModule(board.type, mod, index++)))
+        ))
+        }
       </Box>
     );
   };
