@@ -43,6 +43,12 @@ const RunTabRI = (props) => {
     return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
   };
 
+  const getEventsSent = function (boards) {
+    var eventsSent = 0;
+    boards.forEach(el => eventsSent += el.eventsSent);
+    return eventsSent;
+  }
+
   if (Object.keys(props.currentRun).length === 0) {
     return <LinearProgress />;
   }
@@ -142,7 +148,7 @@ const RunTabRI = (props) => {
               props.currentRun.stop.BD &&
               renderListItem(
                 "events from digitizers",
-                props.currentRun.stop.BD.eventsSent
+                getEventsSent(props.currentRun.stop.BD)
               )}
             {props.currentRun.info.status === "finished" &&
               props.currentRun.info.writeData &&
