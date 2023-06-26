@@ -106,6 +106,7 @@ class V1725BProvider:
 
             if mask & (1 << 31):
                 signalsList.append('triggerSw')
+                triggerSource['triggerSwRate'] = float(self.odb['Settings'][f'Board{board}']['Software trigger rate (Hz)'])
 
             if len(signalsList) > 0:
                 triggerSource['signals'] = signalsList
