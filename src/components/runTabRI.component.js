@@ -45,7 +45,8 @@ const RunTabRI = (props) => {
 
   const getEventsSent = function (boards) {
     var eventsSent = 0;
-    boards.forEach(el => eventsSent += el.eventsSent);
+    const bds = Array.isArray(boards) ? boards : Array(boards);
+    bds.forEach(el => eventsSent += el.eventsSent);
     return eventsSent;
   }
 
