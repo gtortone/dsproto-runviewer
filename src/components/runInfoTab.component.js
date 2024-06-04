@@ -11,6 +11,7 @@ import RunTabSM from "./runTabSM.component";
 import RunTabBD from "./runTabBD.component";
 import RunTabDT from "./runTabDT.component";
 import RunTabCM from "./runTabCM.component";
+import RunTabIN from "./runTabIN.component";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,6 +52,7 @@ const RunInfoTab = (props) => {
         {props.currentRun.start.CM && <Tab value={3} label="Control Module" />}
         {props.currentRun.start.BD && <Tab value={4} label="Digitizers" />}
         {props.currentRun.start.DT && <Tab value={5} label="Dewar" />}
+        {props.currentRun.start.IN && <Tab value={6} label="Instruments" />}
       </Tabs>
       <TabPanel value={value} index={0}>
         <RunTabRI setup={props.setup} currentRun={props.currentRun} />
@@ -69,6 +71,9 @@ const RunInfoTab = (props) => {
       </TabPanel>
       <TabPanel value={value} index={5}>
         <RunTabDT setup={props.setup} currentRun={props.currentRun} />
+      </TabPanel>
+      <TabPanel value={value} index={6}>
+        <RunTabIN setup={props.setup} currentRun={props.currentRun} />
       </TabPanel>
     </Box>
   );
