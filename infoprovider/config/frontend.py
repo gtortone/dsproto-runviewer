@@ -11,6 +11,9 @@ from providers.v1725b import V1725BProvider
 from providers.dt5751 import DT5751Provider 
 from providers.vx274x import VX274xProvider
 from providers.epics import EpicsProvider
+from providers.psu import PSUProvider
+from providers.smu import SMUProvider
+from providers.sgen import SGENProvider
 from providers.utils import *
 
 def getSummary(odb):
@@ -54,6 +57,21 @@ def getSummary(odb):
         data = EpicsProvider(odb['Equipment']['EpicsFrontend']).getData()
         if len(data['modules'][0]['channels']) > 0:
             dictMerged['DT'] = data
+
+    instruments = []    # bench instruments
+
+    for i in range(0,10):
+        if isRunning(odb, f'PSU-E3649A-{str(i).zfill(2)}'):
+            instruments.append(PSUProvider(odb['Equipment'][f'PSU-E3649A-{str(i).zfill(2)}']).getData())
+        if isRunning(odb, f'PSU-E3631A-{str(i).zfill(2)}'):
+            instruments.append(PSUProvider(odb['Equipment'][f'PSU-E3631A-{str(i).zfill(2)}']).getData())
+        if isRunning(odb, f'SMU-2450-{str(i).zfill(2)}'):
+            instruments.append(SMUProvider(odb['Equipment'][f'SMU-2450-{str(i).zfill(2)}']).getData())
+        if isRunning(odb, f'SGEN-33250A-{str(i).zfill(2)}'):
+            instruments.append(SGENProvider(odb['Equipment'][f'SGEN-33250A-{str(i).zfill(2)}']).getData())
+
+    if (len(instruments) > 0):
+        dictMerged['IN'] = instruments
     
     digife = []     # digitizers frontends
 
