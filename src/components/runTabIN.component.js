@@ -40,6 +40,7 @@ const RunTabIN = (props) => {
           <TableHead>
             <TableRow>
               <TableCell style={{ width: 100 }}>{"channel"}</TableCell>
+              <TableCell style={{ width: 100 }}>{"name"}</TableCell>
               <TableCell style={{ width: 100 }} align="right">
                 {"voltage"}
               </TableCell>
@@ -60,6 +61,7 @@ const RunTabIN = (props) => {
                 <TableCell component="th" scope="row">
                   {index + 1}
                 </TableCell>
+                <TableCell>{ch.name}</TableCell>
                 <TableCell align="right">
                   {parseFloat(ch.voltage).toFixed(4)} V
                 </TableCell>
