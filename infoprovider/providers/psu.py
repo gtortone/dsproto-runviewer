@@ -12,6 +12,7 @@ class PSUProvider:
 
         for ch in range(0, len(odb['Variables']['VOLT'])):
             chData = {}
+            chData['name'] = odb['Settings']['name'][ch]
             chData['voltage'] = odb['Variables']['VOLT'][ch]
             chData['current'] = odb['Variables']['CURR'][ch]
             chData['vset'] = odb['Variables']['VLIM'][ch]
