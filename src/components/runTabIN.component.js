@@ -124,7 +124,7 @@ const RunTabIN = (props) => {
         <Table sx={{ width: 4.5 / 5 }} size="small">
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: 100 }}>{"measure function"}</TableCell>
+              <TableCell style={{ width: 100 }}>{"measure"}</TableCell>
               <TableCell style={{ width: 100 }} align="right">
                 {"value"}
               </TableCell>
@@ -133,10 +133,18 @@ const RunTabIN = (props) => {
           <TableBody>
             <TableRow key={v4()}>
               <TableCell component="th" scope="row">
-                {props.dev.measure.function}
+                {"voltage"}
               </TableCell>
               <TableCell align="right">
-                {props.dev.measure.value}
+                {parseFloat(props.dev.measure.voltage).toFixed(4)} V
+              </TableCell>
+            </TableRow>
+            <TableRow key={v4()}>
+              <TableCell component="th" scope="row">
+                {"current"}
+              </TableCell>
+              <TableCell align="right">
+                {parseFloat(props.dev.measure.current).toFixed(4)} A
               </TableCell>
             </TableRow>
           </TableBody>

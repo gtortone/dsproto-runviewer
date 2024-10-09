@@ -14,8 +14,8 @@ class SMUProvider:
         self.data['source']['vlimit'] = odb['Settings']['source']['Vlimit']
         self.data['source']['ilimit'] = odb['Settings']['source']['Ilimit']
         self.data['measure'] = {}
-        self.data['measure']['function'] = odb['Settings']['measure']['function'].strip('"')
-        self.data['measure']['value'] = odb['Variables']['MVAL']
+        self.data['measure']['voltage'] = odb['Variables']['VOLT']
+        self.data['measure']['current'] = odb['Variables']['CURR']
 
     def getData(self):
         return self.data
