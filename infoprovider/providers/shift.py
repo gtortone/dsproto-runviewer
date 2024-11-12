@@ -9,7 +9,7 @@ class ShiftProvider:
         for k,v in odb.items():
             if "key" in k:
                 continue
-            self.data[camelCase(k)] = v.replace("\"", "\\\"")
+            self.data[camelCase(k)] = str(v).replace("\"", "\\\"")
 
     def getData(self):
         return self.data
