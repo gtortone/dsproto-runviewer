@@ -48,15 +48,21 @@ const buildSummary = (result, startId, length) => {
   result.map((obj, index) => {
     let doc = {};
     let channelsNum = 0;
+    let run_ok = true;
 
     if (obj["jsonstop"] === null) {
       // run not finished yet or aborted
-      doc = JSON.parse(obj["jsonstart"]);
+      try {
+         doc = JSON.parse(obj["jsonstart"]);
+      } catch (e) {
+      } 
       if (index === 0) status = "in progress";
       else status = "aborted";
+
     } else {
-      doc = JSON.parse(obj["jsonstop"]);
+
       try {
+        doc = JSON.parse(obj["jsonstop"]);
 
         let digitizers = Array()
         if (Array.isArray(doc["BD"]))
@@ -74,19 +80,22 @@ const buildSummary = (result, startId, length) => {
       status = "finished";
     }
 
-    let doc2 = JSON.parse(obj["jsonstart"])
+    if(run_ok) {
+       // get total number of channels
+       let doc2 = JSON.parse(obj["jsonstart"])
 
-    // check if BD exists
-    if (doc2["BD"]) {
+       // check if BD exists
+       if (doc2["BD"]) {
 
-      let digitizers = Array()
-      if (Array.isArray(doc2["BD"]))
-        digitizers = Array(...doc2["BD"]);
-      else
-        digitizers = Array(doc2["BD"]);
+         let digitizers = Array()
+         if (Array.isArray(doc2["BD"]))
+           digitizers = Array(...doc2["BD"]);
+         else
+           digitizers = Array(doc2["BD"]);
 
-      // set total number of channels
-      digitizers.forEach(d => { channelsNum += getChannelsNum(d) })
+         // set total number of channels
+         digitizers.forEach(d => { channelsNum += getChannelsNum(d) })
+       }
     }
 
     let summaryItem = {
