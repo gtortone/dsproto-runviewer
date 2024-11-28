@@ -55,6 +55,7 @@ const buildSummary = (result, startId, length) => {
       try {
          doc = JSON.parse(obj["jsonstart"]);
       } catch (e) {
+         run_ok = false
       } 
       if (index === 0) status = "in progress";
       else status = "aborted";
@@ -75,14 +76,20 @@ const buildSummary = (result, startId, length) => {
         digitizers.forEach(d => { eventsSent += d.eventsSent })
 
       } catch {
+        run_ok = false
         eventsSent = "-";
       }
       status = "finished";
     }
 
     if(run_ok) {
+       let doc2 
        // get total number of channels
-       let doc2 = JSON.parse(obj["jsonstart"])
+       try {
+          doc2 = JSON.parse(obj["jsonstart"])
+       } catch {
+         run_ok = false
+       }
 
        // check if BD exists
        if (doc2["BD"]) {
